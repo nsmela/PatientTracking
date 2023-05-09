@@ -1,0 +1,115 @@
+﻿@page "/newpatient"
+@inject NavigationManager NavigationManager
+@inject PatientService PatientService
+
+
+<h3>Add Patient</h3>
+<MudGrid>
+        <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ReadOnly="false">
+                <MudNumericField @bind-Value="@id" HideSpinButtons="true" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" /> 
+                <MudTextField @bind-Value="@lastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
+                <MudTextField @bind-Value="@firstName" Label="First Name" />
+                <MudDatePicker @bind-PickerMonth="date" Label="Start Date" @bind-Date="date" />
+
+                @foreach(var group in groups){
+                    <MudPaper xs="12" sm="4">
+                        <MudTextField @bind-Value="group.Label" Label="Group Name" Required="true" RequiredError="A group is missing a name!" Margin="Margin.Dense"/>
+                        @foreach(var task in group.Tasks){
+                            <MudTextField @bind-Value="task.Label" HelperText="@task.Type" />
+                        }
+                        <div>
+                            <MudSelect @bind-Value="group.SelectedTask" Label="Task Type" AnchorOrigin="Origin.BottomCenter">
+                                <MudSelectItem Value="@("Checkbox")" />
+                                <MudSelectItem Value="@("Text")" />
+                            </MudSelect>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(()=> AddTask(group))">
+                                Add Task
+                            </MudButton>
+                        </div>
+                    </MudPaper>
+                }
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => AddGroup())" >Add Group</MudButton>
+
+            </MudForm>   
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=> Submit())">Submit</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="@(()=> Reset())" Class="mx-2">Clear Form</MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText>
+            @foreach (var error in errors) {
+                        <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    bool success;
+    string[] errors = { };
+    MudForm form;
+    uint id;
+    string lastName, firstName;
+    DateTime? date;
+    List<TaskGroup> groups = new();
+
+    public class TaskGroup {
+        public string Label { get; set; }
+        public List<PatientTask> Tasks { get; set; } = new List<PatientTask>();
+        public string SelectedTask { get; set; }
+    }
+
+    public class PatientTask {
+        public string Label {get; set; }
+        public string Type {get; set; }
+    }
+
+    private async Task AddGroup(){
+        groups.Add(new TaskGroup { Label = "New Group!" });
+        StateHasChanged();
+    }
+
+    private async Task AddTask(TaskGroup group){
+        if (group.SelectedTask is null || group.SelectedTask == string.Empty) return;
+
+        group.Tasks.Add(new PatientTask { Label = "New Task", Type = group.SelectedTask });
+
+        StateHasChanged();
+    }
+
+    private async Task Submit(){
+        if (!success) return;
+
+        Patient patient = new Patient();
+        patient.Id = id;
+        patient.LastName = lastName;
+        if (firstName is null) patient.FirstName = string.Empty; else patient.FirstName = firstName;
+        patient.StartDate = DateOnly.FromDateTime((DateTime)date);
+
+        //task groups and tasks
+        foreach(var group in groups){
+            var patientGroup = new PatientTaskGroup { Label = group.Label, Tasks = new() };
+            foreach(var task in group.Tasks){
+                if (task.Type == "Checkbox") patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label });
+                if (task.Type == "Text") patientGroup.Tasks.Add(new PatientTaskText{ Label = task.Label });
+            }
+            patient.TaskGroups.Add(patientGroup);
+
+        }
+        PatientService.AddPatient(patient);
+        NavigationManager.NavigateTo("patients");
+    }
+
+    private async Task Reset(){
+        groups.Clear();
+        form.ResetAsync();
+
+    }
+}

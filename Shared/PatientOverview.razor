@@ -1,0 +1,63 @@
+﻿@inject PatientService patientService
+
+
+@if(Patient == null){
+    <p><em>Loading patient...</em></p>
+} 
+else{
+
+    <MudPaper Class="pa-16 ma-2" Outlined="true" Elevation="3" MinWidth="330px">
+        <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+        <MudText Align="Align.Left" Typo="Typo.h6">General</MudText>
+        <MudText Typo="Typo.h6"Align="Align.Left" >@Date</MudText>
+        <MudText Typo="Typo.body1" Align="Align.Right"><b>PID:</b> @Id</MudText>
+        <MudText Typo="Typo.body1" Align="Align.Right"><b>Name:</b> @Name</MudText>
+
+        @foreach(var group in Patient.TaskGroups){
+            <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+            <MudText Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
+            @foreach(var result in group.Tasks){
+                if (result.GetType() == typeof(PatientTaskBool)) {
+                    var task = result as PatientTaskBool;
+                    <MudCheckBox 
+                        T="bool"
+                        LabelPosition="LabelPosition.Start"
+                        Label="@task.Label"
+                        Checked="@task.Checked"
+                        CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                }
+                else if (result.GetType() == typeof(PatientTaskText)) {
+                    var task = result as PatientTaskText;
+                    <MudTextField 
+                        T="string" 
+                        Label="@task.Label" 
+                        Variant="Variant.Outlined" 
+                        Margin="Margin.Dense"
+                        TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" 
+                        Text="@task.Text" />
+                }
+            }
+
+        }
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public Patient? Patient { get; set; }
+    string Name => Patient.LastName + ", " + Patient.FirstName;
+    string Id => Patient.Id.ToString("00000");
+    string Date => $" {Patient.StartDate.Year} {months[Patient.StartDate.Month]} {Patient.StartDate.Day.ToString("00")}";
+    int status => (int)Patient.Status;
+    string[] months = new string[] { "N/A", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+    string[] labels = new string[] { "Newly Added", "Assigned", "Treatment Ready", "In Treatment", "Treatment Complete", "Retired" };
+
+    private async Task UpdatePatientTask(string groupLabel, string label, object value){
+        int groupIndex = Patient.TaskGroups.FindIndex(g => g.Label == groupLabel);
+        int index = Patient.TaskGroups[groupIndex].Tasks.FindIndex(t => t.Label == label);
+        if (index >= 0) {
+            Patient.TaskGroups[groupIndex].Tasks[index].SetValue(value);
+            patientService.UpdatePatient(Patient);
+        }
+    }
+}

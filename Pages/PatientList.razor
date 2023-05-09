@@ -1,0 +1,22 @@
+﻿@page "/patients"
+
+@inject PatientService patientService
+
+<h3>Patients Listings</h3>
+@if(patients == null){
+    <p><em>Loading patients... </em></p>
+}else {
+    <MudStack Row="true">
+        @foreach(var patient in patients) {
+            <PatientOverview Patient=@patient />
+        }
+    </MudStack>
+}
+
+@code {
+    private Patient[]? patients;
+
+    protected override async Task OnInitializedAsync() {
+        patients = await patientService.GetPatientsAsync();
+    }
+}
