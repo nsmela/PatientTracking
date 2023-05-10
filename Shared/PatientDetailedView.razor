@@ -3,37 +3,57 @@
 @if(patient is null){
     <MudProgressCircular />
 } else {
+    <MudContainer Class="ma-4" MaxWidth="MaxWidth.Large">
+        <MudGrid xs="12" md="8">
+            <MudItem xs="12" Elevation="0">
 
-<MudGrid>
-    <MudItem>
-        <MudText>@patient.LastName, @patient.FirstName</MudText>
-        <MudText>@patient.Id</MudText>
-        <MudText>@patient.StartDate</MudText>
-        <MudDivider />
-        @foreach(var group in patient.TaskGroups){
-            <MudText>@group.Label</MudText>
-            @foreach(var result in group.Tasks){
-                if (result.GetType() == typeof(PatientTaskBool)) {
-                    var task = result as PatientTaskBool;
-                    <MudCheckBox T="bool"
-                    LabelPosition="LabelPosition.Start"
-                    Label="@task.Label"
-                    Checked="@task.Checked"
-                    CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
-                }
-                else if (result.GetType() == typeof(PatientTaskText)) {
-                    var task = result as PatientTaskText;
-                    <MudTextField T="string"
-                    Label="@task.Label"
-                    Variant="Variant.Outlined"
-                    Margin="Margin.Dense"
-                    TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
-                    Text="@task.Text" />
-                }
-            }
-        }
-    </MudItem>
-</MudGrid>
+                <MudCard Class="pa-n4 mt-0 mud-theme-primary py-4 px-4 rounded-t-lg">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@patient.StartDate</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                </MudCard>
+                <MudPaper Elevation="2" Class="pa-4 mt-n8">
+                    <MudText>@patient.LastName, @patient.FirstName</MudText>
+                    <MudText>@patient.Id</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudGrid>
+                    @foreach (var group in patient.TaskGroups) {
+                    <MudItem xs="12" md="6" xl="6">
+                        <MudPaper Elevation="2" Class="pa-4">
+                            <MudText Typo="Typo.h6">@group.Label</MudText>
+                                @foreach(var result in group.Tasks){
+                                    if (result.GetType() == typeof(PatientTaskBool)) {
+                                        var task = result as PatientTaskBool;
+                                        <MudCheckBox T="bool"
+                                        LabelPosition="LabelPosition.Start"
+                                        Label="@task.Label"
+                                        Checked="@task.Checked"
+                                        CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                                    }
+                                    else if (result.GetType() == typeof(PatientTaskText)) {
+                                        var task = result as PatientTaskText;
+                                        <MudTextField T="string"
+                                        Label="@task.Label"
+                                        Variant="Variant.Outlined"
+                                        Margin="Margin.Dense"
+                                        TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
+                                        Text="@task.Text" />
+                                    }
+                                }
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
 }
 
 @code {

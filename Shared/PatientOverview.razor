@@ -1,45 +1,58 @@
 ﻿@inject PatientService patientService
-
+@inject NavigationManager navigationManager
 
 @if(Patient == null){
     <p><em>Loading patient...</em></p>
 } 
 else{
+    <MudCard Class="pb-4 mud-theme-primary rounded-t-lg">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">@Date</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" OnClick="(()=> EditPatient())"/>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudContainer Class="pt-3" MaxWidth="MaxWidth.Large">
+            <MudGrid xs="12">
+                <MudItem xs="12" Elevation="0">
+                    <MudPaper Elevation="2" Class="pa-2 mt-n8 mud-theme-secondary">
+                        <MudText><b>Name:</b> @Name</MudText>
+                        <MudText><b>PID:</b> @Id</MudText>
+                    </MudPaper>
+                </MudItem>
+                          @foreach (var group in Patient.TaskGroups) {
+                            <MudItem xs="12">
+                                <MudPaper Elevation="2" Class="pa-2">
+                                    <MudText Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
+                            
+                                    @foreach (var result in group.Tasks) {
+                                        if (result.GetType() == typeof(PatientTaskBool)) {
+                                            var task = result as PatientTaskBool;
+                                            <MudCheckBox T="bool"
+                                         LabelPosition="LabelPosition.Start"
+                                         Label="@task.Label"
+                                         Checked="@task.Checked"
+                                         CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                                        }
+                                        else if (result.GetType() == typeof(PatientTaskText)) {
+                                            var task = result as PatientTaskText;
+                                            <MudTextField T="string"
+                                          Label="@task.Label"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
+                                          Text="@task.Text" />
+                                        }
+                                    }
 
-    <MudPaper Class="pa-16 ma-2" Outlined="true" Elevation="3" MinWidth="330px">
-        <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-        <MudText Align="Align.Left" Typo="Typo.h6">General</MudText>
-        <MudText Typo="Typo.h6"Align="Align.Left" >@Date</MudText>
-        <MudText Typo="Typo.body1" Align="Align.Right"><b>PID:</b> @Id</MudText>
-        <MudText Typo="Typo.body1" Align="Align.Right"><b>Name:</b> @Name</MudText>
-
-        @foreach(var group in Patient.TaskGroups){
-            <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-            <MudText Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
-            @foreach(var result in group.Tasks){
-                if (result.GetType() == typeof(PatientTaskBool)) {
-                    var task = result as PatientTaskBool;
-                    <MudCheckBox 
-                        T="bool"
-                        LabelPosition="LabelPosition.Start"
-                        Label="@task.Label"
-                        Checked="@task.Checked"
-                        CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
-                }
-                else if (result.GetType() == typeof(PatientTaskText)) {
-                    var task = result as PatientTaskText;
-                    <MudTextField 
-                        T="string" 
-                        Label="@task.Label" 
-                        Variant="Variant.Outlined" 
-                        Margin="Margin.Dense"
-                        TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" 
-                        Text="@task.Text" />
-                }
-            }
-
-        }
-    </MudPaper>
+                                </MudPaper>
+                            </MudItem>
+                        }
+            </MudGrid>
+        </MudContainer>
+    </MudCard>
 }
 
 @code {
@@ -59,5 +72,9 @@ else{
             Patient.TaskGroups[groupIndex].Tasks[index].SetValue(value);
             patientService.UpdatePatient(Patient);
         }
+    }
+
+    private void EditPatient(){
+        navigationManager.NavigateTo($"patient/{Patient.Id}");
     }
 }
