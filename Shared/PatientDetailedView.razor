@@ -1,4 +1,5 @@
 ﻿@inject PatientService patientService
+@inject NavigationManager navigationManager
 
 @if(patient is null){
     <MudProgressCircular />
@@ -13,7 +14,8 @@
                             <MudText Typo="Typo.h6">@patient.StartDate</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                            <MudIconButton Icon="@Icons.Material.Filled.EditNote" Color="Color.Default" />
+                            <MudIconButton Icon="@Icons.Material.Filled.PersonRemove" Color="Color.Default" OnClick="(()=> DeletePatient())"/>
                         </CardHeaderActions>
                     </MudCardHeader>
                 </MudCard>
@@ -57,6 +59,8 @@
 }
 
 @code {
+    [Inject] private IDialogService dialogService { get; set; }
+
     [Parameter] public string PatientId { get; set; }
 
     Patient? patient = null;
@@ -72,5 +76,18 @@
             patient.TaskGroups[groupIndex].Tasks[index].SetValue(value);
             patientService.UpdatePatient(patient);
         }
+    }
+
+    private async void DeletePatient() {
+        var result = await dialogService.ShowMessageBox(
+            "Warning",
+            "Deleting can not be undone!",
+            yesText: "Delete!", 
+            cancelText: "Cancel");
+
+        if (result is null) return;
+
+        patientService.RemovePatient(PatientId);
+        navigationManager.NavigateTo("/patients");
     }
 }

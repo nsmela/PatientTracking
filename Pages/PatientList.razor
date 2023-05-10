@@ -2,11 +2,11 @@
 
 @inject PatientService patientService
 
-<h3>Patients Listings</h3>
+<h3>Active Patient Listings</h3>
 @if(patients == null){
     <p><em>Loading patients... </em></p>
 }else {
-    <MudStack Row="true">
+    <MudStack Row="true" Class="pa-2">
         @foreach(var patient in patients) {
             <PatientOverview Patient=@patient />
         }
