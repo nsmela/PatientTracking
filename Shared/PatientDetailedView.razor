@@ -4,17 +4,16 @@
 @if(patient is null){
     <MudProgressCircular />
 } else {
-    <MudContainer Class="ma-4" MaxWidth="MaxWidth.Large">
-        <MudGrid xs="12" md="8">
-            <MudItem xs="12" Elevation="0">
-
+    <MudContainer Class="ma-4 pa-2" >
+        <MudGrid xs="12" md="8" lg="4">
+            <MudItem xs="12" md="8" Elevation="1">
                 <MudCard Class="pa-n4 mt-0 mud-theme-primary py-4 px-4 rounded-t-lg">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@patient.StartDate</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.EditNote" Color="Color.Default" />
+                            <MudIconButton Icon="@Icons.Material.Filled.EditNote" Color="Color.Default" OnClick="(() => EditPatient())" />
                             <MudIconButton Icon="@Icons.Material.Filled.PersonRemove" Color="Color.Default" OnClick="(()=> DeletePatient())"/>
                         </CardHeaderActions>
                     </MudCardHeader>
@@ -27,29 +26,29 @@
             <MudItem xs="12" md="8">
                 <MudGrid>
                     @foreach (var group in patient.TaskGroups) {
-                    <MudItem xs="12" md="6" xl="6">
-                        <MudPaper Elevation="2" Class="pa-4">
-                            <MudText Typo="Typo.h6">@group.Label</MudText>
-                                @foreach(var result in group.Tasks){
-                                    if (result.GetType() == typeof(PatientTaskBool)) {
-                                        var task = result as PatientTaskBool;
-                                        <MudCheckBox T="bool"
-                                        LabelPosition="LabelPosition.Start"
-                                        Label="@task.Label"
-                                        Checked="@task.Checked"
-                                        CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                        <MudItem xs="12" md="8">
+                            <MudPaper Elevation="2" Class="pa-4">
+                                <MudText Typo="Typo.h6">@group.Label</MudText>
+                                    @foreach(var result in group.Tasks){
+                                        if (result.GetType() == typeof(PatientTaskBool)) {
+                                            var task = result as PatientTaskBool;
+                                            <MudCheckBox T="bool"
+                                            LabelPosition="LabelPosition.Start"
+                                            Label="@task.Label"
+                                            Checked="@task.Checked"
+                                            CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                                        }
+                                        else if (result.GetType() == typeof(PatientTaskText)) {
+                                            var task = result as PatientTaskText;
+                                            <MudTextField T="string"
+                                            Label="@task.Label"
+                                            Variant="Variant.Outlined"
+                                            Margin="Margin.Dense"
+                                            TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
+                                            Text="@task.Text" />
+                                        }
                                     }
-                                    else if (result.GetType() == typeof(PatientTaskText)) {
-                                        var task = result as PatientTaskText;
-                                        <MudTextField T="string"
-                                        Label="@task.Label"
-                                        Variant="Variant.Outlined"
-                                        Margin="Margin.Dense"
-                                        TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
-                                        Text="@task.Text" />
-                                    }
-                                }
-                            </MudPaper>
+                                </MudPaper>
                         </MudItem>
                     }
                 </MudGrid>
@@ -78,7 +77,7 @@
         }
     }
 
-    private async void DeletePatient() {
+    private async Task DeletePatient() {
         var result = await dialogService.ShowMessageBox(
             "Warning",
             "Deleting can not be undone!",
@@ -89,5 +88,9 @@
 
         patientService.RemovePatient(PatientId);
         navigationManager.NavigateTo("/patients");
+    }
+
+    private async Task EditPatient(){
+        navigationManager.NavigateTo($"/editpatient/{PatientId}");
     }
 }

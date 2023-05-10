@@ -5,7 +5,7 @@
 
 <h3>Add Patient</h3>
 <MudGrid>
-        <MudItem xs="12" sm="7">
+        <MudItem xs="12" sm="7" >
         <MudPaper Class="pa-4">
             <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ReadOnly="false">
                 <MudTextField @bind-Value="@id" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" />
@@ -91,7 +91,7 @@
         patient.Id = id;
         patient.LastName = lastName;
         if (firstName is null) patient.FirstName = string.Empty; else patient.FirstName = firstName;
-        patient.StartDate = DateOnly.FromDateTime((DateTime)date);
+        patient.StartDate = date;
 
         //task groups and tasks
         foreach(var group in groups){

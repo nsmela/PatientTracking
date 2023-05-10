@@ -60,7 +60,7 @@ else{
     public Patient? Patient { get; set; }
     string Name => Patient.LastName + ", " + Patient.FirstName;
     string Id => Patient.Id;
-    string Date => $" {Patient.StartDate.Year} {months[Patient.StartDate.Month]} {Patient.StartDate.Day.ToString("00")}";
+    string Date => $" {Patient.StartDate.Value.Year} {months[Patient.StartDate.Value.Month]} {Patient.StartDate.Value.Day.ToString("00")}";
     int status => (int)Patient.Status;
     string[] months = new string[] { "N/A", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
     string[] labels = new string[] { "Newly Added", "Assigned", "Treatment Ready", "In Treatment", "Treatment Complete", "Retired" };

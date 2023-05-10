@@ -5,7 +5,7 @@
                 FirstName = "Alex",
                 LastName = "Trebek",
                 Id = "01122",
-                StartDate = new DateOnly(2023, 01, 01),
+                StartDate = new DateTime(2023, 01, 01),
                 Status = 3,
                 TaskGroups = new List<PatientTaskGroup> {
                     new PatientTaskGroup {Label = "Standard",
@@ -19,7 +19,7 @@
                 FirstName = "Vanna",
                 LastName = "White",
                 Id = "01123",
-                StartDate = new DateOnly(2023, 11, 01),
+                StartDate = new DateTime(2023, 11, 01),
                 Status = 0,
                 TaskGroups = new List<PatientTaskGroup> {
                     new PatientTaskGroup {Label = "Standard",
@@ -33,7 +33,7 @@
                 FirstName = "Drew",
                 LastName = "Carey",
                 Id = "01124",
-                StartDate = new DateOnly(2023, 04, 11),
+                StartDate = new DateTime(2023, 04, 11),
                 Status = 2,
                 TaskGroups = new List<PatientTaskGroup> {
                     new PatientTaskGroup {Label = "Standard",
