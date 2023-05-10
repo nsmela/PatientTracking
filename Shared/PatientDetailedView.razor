@@ -1,0 +1,56 @@
+﻿@inject PatientService patientService
+
+@if(patient is null){
+    <MudProgressCircular />
+} else {
+
+<MudGrid>
+    <MudItem>
+        <MudText>@patient.LastName, @patient.FirstName</MudText>
+        <MudText>@patient.Id</MudText>
+        <MudText>@patient.StartDate</MudText>
+        <MudDivider />
+        @foreach(var group in patient.TaskGroups){
+            <MudText>@group.Label</MudText>
+            @foreach(var result in group.Tasks){
+                if (result.GetType() == typeof(PatientTaskBool)) {
+                    var task = result as PatientTaskBool;
+                    <MudCheckBox T="bool"
+                    LabelPosition="LabelPosition.Start"
+                    Label="@task.Label"
+                    Checked="@task.Checked"
+                    CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                }
+                else if (result.GetType() == typeof(PatientTaskText)) {
+                    var task = result as PatientTaskText;
+                    <MudTextField T="string"
+                    Label="@task.Label"
+                    Variant="Variant.Outlined"
+                    Margin="Margin.Dense"
+                    TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
+                    Text="@task.Text" />
+                }
+            }
+        }
+    </MudItem>
+</MudGrid>
+}
+
+@code {
+    [Parameter] public string PatientId { get; set; }
+
+    Patient? patient = null;
+
+    protected override async Task OnParametersSetAsync() {
+        patient = await patientService.GetPatientByIdAsync(PatientId);
+    }
+
+    private async Task UpdatePatientTask(string groupLabel, string label, object value) {
+        int groupIndex = patient.TaskGroups.FindIndex(g => g.Label == groupLabel);
+        int index = patient.TaskGroups[groupIndex].Tasks.FindIndex(t => t.Label == label);
+        if (index >= 0) {
+            patient.TaskGroups[groupIndex].Tasks[index].SetValue(value);
+            patientService.UpdatePatient(patient);
+        }
+    }
+}

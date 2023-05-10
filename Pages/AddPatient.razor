@@ -8,7 +8,7 @@
         <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
             <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ReadOnly="false">
-                <MudNumericField @bind-Value="@id" HideSpinButtons="true" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" /> 
+                <MudTextField @bind-Value="@id" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" />
                 <MudTextField @bind-Value="@lastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
                 <MudTextField @bind-Value="@firstName" Label="First Name" />
                 <MudDatePicker @bind-PickerMonth="date" Label="Start Date" @bind-Date="date" />
@@ -55,7 +55,7 @@
     bool success;
     string[] errors = { };
     MudForm form;
-    uint id;
+    string id;
     string lastName, firstName;
     DateTime? date;
     List<TaskGroup> groups = new();

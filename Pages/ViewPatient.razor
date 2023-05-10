@@ -1,0 +1,7 @@
+﻿@page "/patient/{Id}"
+
+<PatientDetailedView PatientId="@Id" />
+
+@code {
+    [Parameter] public string Id { get; set; }
+}

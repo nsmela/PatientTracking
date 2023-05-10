@@ -4,7 +4,7 @@
             new Patient{
                 FirstName = "Alex",
                 LastName = "Trebek",
-                Id = 01122,
+                Id = "01122",
                 StartDate = new DateOnly(2023, 01, 01),
                 Status = 3,
                 TaskGroups = new List<PatientTaskGroup> {
@@ -18,7 +18,7 @@
             new Patient{
                 FirstName = "Vanna",
                 LastName = "White",
-                Id = 01123,
+                Id = "01123",
                 StartDate = new DateOnly(2023, 11, 01),
                 Status = 0,
                 TaskGroups = new List<PatientTaskGroup> {
@@ -32,7 +32,7 @@
             new Patient{
                 FirstName = "Drew",
                 LastName = "Carey",
-                Id = 01124,
+                Id = "01124",
                 StartDate = new DateOnly(2023, 04, 11),
                 Status = 2,
                 TaskGroups = new List<PatientTaskGroup> {
@@ -45,8 +45,15 @@
             } }
         };
 
-        public Task<Patient[]> GetPatientsAsync(int? id = null) {
+        public Task<Patient[]> GetPatientsAsync() {
             return Task.FromResult(patients.ToArray());
+        }
+
+        public Task<Patient> GetPatientByIdAsync(string id) {
+            var index = patients.FindIndex(p => p.Id == id);
+            var result = patients.First(p => p.Id == id);
+            if (index < 0) return null;
+            return Task.FromResult(patients[index]);
         }
 
         public async Task UpdatePatient(Patient patient) {
@@ -60,5 +67,11 @@
             patients.Add(patient);
         }
 
+        public async Task RemovePatient(string id) {
+            var result = patients.Find(p => p.Id == id);
+            if (result is not null) {
+                patients.Remove(result);
+            }
+        }
     }
 }
