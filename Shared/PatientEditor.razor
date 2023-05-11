@@ -11,38 +11,43 @@
                 }
                 <MudSpacer />
                 <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
-                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete">Delete Section</MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" OnClick="(()=> DeleteGroup(group))" >Delete Section</MudButton>
                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="(()=> EditGroupName(group))">Rename Section</MudButton>
                 </MudMenu>
             </MudToolBar>
             <MudStack Class="pt-4">
-            <!-- Each task listing -->
+                <!-- Each task listing -->
                 @foreach (var task in group.Tasks) {
                     <MudToolBar Class="ma-n4">
-                        <MudIcon Icon="@TypeToIcon(task.Type)" Size="Size.Small" Class="pr-1"/>
+                        <MudIcon Icon="@TypeToIcon(task.Type)" Size="Size.Small" Class="pr-1" />
                         <MudText Typo="Typo.body1"><b>@task.Label</b></MudText>
                         <MudSpacer />
                         <MudIconButton Icon="@Icons.Material.Sharp.Edit" Size="Size.Small" />
                         <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(()=> RaiseTask(group, task))" />
-                        <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(()=> LowerTask(group, task))"/>
+                        <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(()=> LowerTask(group, task))" />
                         <MudIconButton icon="@Icons.Material.Sharp.RemoveCircleOutline"
                                Color="Color.Error" Size="Size.Small" OnClick="(()=> DeleteTask(group, task))" />
 
                     </MudToolBar>
                 }
-            <!-- Add Task Section -->
-            @if(group.NewTaskOpen){
-                <MudPaper Elevation="25" Class="pa-2 rounded-lg">
-                    <MudToolBar Dense="true">
-                        <MudIcon Icon="@Icons.Material.Sharp.Edit" Size="Size.Small" Class="pr-1"/>
-                        <MudTextField @bind-Value="group.NewTaskName" Placeholder="New Task" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
-                    </MudToolBar>
-                    <MudButton OnClick="@(() => AddTaskItem(group))" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Task</MudButton>
-                    <MudButton OnClick="@(() => group.NewTaskOpen = !group.NewTaskOpen)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Hide</MudButton>
-                </MudPaper>
-            }else{
-                <MudButton OnClick="@(() => group.NewTaskOpen = !group.NewTaskOpen)" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
-            }
+                <!-- Add Task Section -->
+                @if (group.NewTaskOpen) {
+                    <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+                        <MudToolBar Dense="true">
+                            <MudSelect Margin="Margin.Dense" Dense="true" @bind-Value="@group.NewTaskType">
+                                @foreach (var item in Enum.GetValues(typeof(Field))) {
+                                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudTextField @bind-Value="group.NewTaskName" Placeholder="New Task" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
+                        </MudToolBar>
+                        <MudButton OnClick="@(() => AddTaskItem(group))" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Task</MudButton>
+                        <MudButton OnClick="@(() => group.NewTaskOpen = !group.NewTaskOpen)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Hide</MudButton>
+                    </MudPaper>
+                }
+                else {
+                    <MudButton OnClick="@(() => group.NewTaskOpen = !group.NewTaskOpen)" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+                }
             </MudStack>
         </MudPaper>
     }
@@ -52,7 +57,7 @@
     [Parameter] public string PatientId { get; set; }
 
     List<TaskGroup> groups = new List<TaskGroup>{
-        new TaskGroup { 
+        new TaskGroup {
             Name ="First Task",
             NewName = "First Task",
             Tasks = new List<TaskItem>{
@@ -62,8 +67,7 @@
                 new TaskItem { Label = "Run", Type = "Checkbox" },
                 new TaskItem { Label = "Sleep", Type = "Checkbox" },
                 new TaskItem { Label = "Play", Type = "Checkbox" }
-            }
-        },
+            }},
         new TaskGroup{
             Name ="Second Task",
             NewName = "Second Task",
@@ -72,14 +76,16 @@
                 new TaskItem { Label = "Clean", Type = "Text"},
                 new TaskItem { Label = "Sweep", Type = "Checkbox"},
                 new TaskItem { Label = "Sleep", Type = "Checkbox"},
-            }
-        },
+            }},
     };
 
+    public enum Field { Checkbox, Text };
+
     private string GroupHeaderClass(TaskGroup group) => group.EditNameOpen ? "mud-secondary pa-4 ma-n2" : "mud-primary pa-4 ma-n2";
-    private string TypeToIcon(string type){
-        if(type == "Checkbox") return Icons.Material.Outlined.CheckBox;
-        if(type == "Text") return @Icons.Material.Filled.TextSnippet;
+
+    private string TypeToIcon(string type) {
+        if (type == "Checkbox") return Icons.Material.Outlined.CheckBox;
+        if (type == "Text") return Icons.Material.Filled.TextSnippet;
         return null;
     }
 
@@ -93,7 +99,7 @@
 
     private async Task LowerTask(TaskGroup group, TaskItem task) {
         var index = group.Tasks.IndexOf(task);
-        if (index == group.Tasks.Count -1) return;
+        if (index == group.Tasks.Count - 1) return;
 
         group.Tasks.RemoveAt(index);
         group.Tasks.Insert(index + 1, task);
@@ -103,14 +109,14 @@
         group.Tasks.Remove(task);
     }
 
-    private async Task AddTaskItem(TaskGroup group){
-        if(group.NewTaskName == null) return;
-        if(group.Tasks.FindAll(t => t.Label == group.NewTaskName).Count() > 0) return;
+    private async Task AddTaskItem(TaskGroup group) {
+        if (group.NewTaskName == null) return;
+        if (group.Tasks.FindAll(t => t.Label == group.NewTaskName).Count() > 0) return;
 
-        var task = new TaskItem{ 
-            Label = group.NewTaskName,
-            Type = "Text"
-        };
+        var task = new TaskItem {
+                Label = group.NewTaskName,
+                Type = "Text"
+            };
         group.NewTaskOpen = false;
         group.Tasks.Add(task);
     }
@@ -126,6 +132,10 @@
         group.EditNameOpen = false;
     }
 
+    private async Task DeleteGroup(TaskGroup group){
+        groups.Remove(group);
+    }
+
     public class TaskGroup {
         public string Name { get; set; }
         public string NewName { get; set; }
@@ -133,7 +143,7 @@
 
         public bool NewTaskOpen { get; set; }
         public string NewTaskName { get; set; }
-        public string NewTaskType { get; set; }
+        public Field NewTaskType { get; set; }
 
         public List<TaskItem> Tasks { get; set; }
     }
@@ -143,4 +153,3 @@
         public string Type { get; set; }
     }
 }
-
