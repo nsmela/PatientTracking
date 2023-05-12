@@ -243,6 +243,8 @@
                     tasks.Add(task);
                 }
             });
+            group.Tasks = tasks;
+            taskGroups.Add(group);
         });
         var patient = new Patient {
                 Id = id,
