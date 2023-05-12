@@ -1,8 +1,6 @@
 ﻿@page "/editpatient/{Id}"
 
-<h3>Edit Patient</h3>
 <PatientEditor PatientId="@Id" />
-<PatientEditView patientId="@Id" />
 
 @code {
     [Parameter] public string Id { get; set; }
