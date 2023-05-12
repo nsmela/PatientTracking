@@ -73,5 +73,24 @@
                 patients.Remove(result);
             }
         }
+
+
+        //templates
+        private List<Patient> _patientTemplates = new();
+
+        public async Task AddPatientTemplate(Patient patient) => _patientTemplates.Add(patient);
+        public Task<Patient[]> GetPatientTemplates() => Task.FromResult(_patientTemplates.ToArray());
+        public Task<Patient> GetPatientTemplate(int index) => Task.FromResult(_patientTemplates[index]);
+        public async Task UpdatePatientTemplate(int index, Patient patient) => _patientTemplates[index] = patient;
+        public async Task RemovePatientTemplate(Patient patient)=> _patientTemplates.Remove(patient);
+        
+
+        private List<PatientTaskGroup> _taskTemplates = new();
+
+        public async Task AddTaskTemplate(PatientTaskGroup group) => _taskTemplates.Add(group);
+        public Task<PatientTaskGroup[]> GetTaskTemplates() => Task.FromResult(_taskTemplates.ToArray());
+        public Task<PatientTaskGroup> GetTaskTemplate(int index) => Task.FromResult(_taskTemplates[index]);
+        public async Task UpdateTaskTemplate(int index, PatientTaskGroup group) => _taskTemplates[index] = group;
+        public async Task RemoveTaskTemplate(PatientTaskGroup group) => _taskTemplates.Remove(group);
     }
-}
+    }
