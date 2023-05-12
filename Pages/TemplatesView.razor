@@ -1,9 +1,35 @@
 ﻿@page "/templates"
 
-<MudContainer Class="pa-1">
+<MudContainer Class="pa-1" Width="440px" >
     @foreach(var pTemplate in _patientTemplates){
         <p>@pTemplate.</p>
     }
+    <!-- Add Group Template -->
+    <MudPaper Class="pa-4" Elevation="0">
+        @if (AddGroupOpen) {
+            <MudPaper Elevation="0" MinHeight="80px" Class="pa-2 ma-4 d-flex flex-column mud-background-gray rounded-lg">
+                <MudToolBar DisableGutters="true" Class="mud-secondary pa-4 ma-n2">
+                    @if (EditNameOpen) {
+                        <MudTextField @bind-Value="NewName" Placeholder="@Name" Label="Edit Group Name"
+                              DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2" TextChanged="(() => OnNameFieldChanged())" />
+                    }
+                    else {
+                        <MudText Typo="Typo.subtitle1"><b>@Name</b></MudText>
+                    }
+                    <MudSpacer />
+                    <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="(()=> EditNameOpen = true)">Rename Section</MudButton>
+                    </MudMenu>
+                </MudToolBar>
+                <MudStack Class="pt-4">
+
+                </MudStack>
+            </MudPaper>
+        }
+        else {
+            <MudButton OnClick="(()=> AddGroupOpen = true)" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Group</MudButton>
+        }
+    </MudPaper>
 </MudContainer>
 
 @code {
@@ -11,8 +37,22 @@
     private PatientTemplate[] _patientTemplates;
     private TasksTemplate[] _taskTemplates;
 
+    bool AddGroupOpen = false;
+    bool EditNameOpen = false;
+    string Name = "New Group";
+    string NewName = "New Group";
+    List<IPatientTask> Tasks = new();
+    int EditTaskIndex = -1;
+
     protected override async Task OnInitializedAsync() {
         _patientTemplates = await patientService.GetPatientTemplates();
         _taskTemplates = await patientService.GetTaskTemplates();
+    }
+
+    private void OnNameFieldChanged() {
+        if (Name == NewName) return;
+
+        Name = NewName;
+        EditNameOpen = false;
     }
 }
