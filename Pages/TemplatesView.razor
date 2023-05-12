@@ -1,0 +1,18 @@
+﻿@page "/templates"
+
+<MudContainer Class="pa-1">
+    @foreach(var pTemplate in _patientTemplates){
+        <p>@pTemplate.</p>
+    }
+</MudContainer>
+
+@code {
+    [Inject] PatientService patientService { get; set; }
+    private PatientTemplate[] _patientTemplates;
+    private TasksTemplate[] _taskTemplates;
+
+    protected override async Task OnInitializedAsync() {
+        _patientTemplates = await patientService.GetPatientTemplates();
+        _taskTemplates = await patientService.GetTaskTemplates();
+    }
+}

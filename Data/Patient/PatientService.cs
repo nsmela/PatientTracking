@@ -1,4 +1,6 @@
-﻿namespace PatientTracking.Data.Patient {
+﻿using PatientTracking.Data.Templates;
+
+namespace PatientTracking.Data.Patient {
     public class PatientService {
         private List<Patient> patients = new List<Patient> {
             new Patient{
@@ -76,21 +78,41 @@
 
 
         //templates
-        private List<Patient> _patientTemplates = new();
+        private List<PatientTemplate> _patientTemplates = new();
 
-        public async Task AddPatientTemplate(Patient patient) => _patientTemplates.Add(patient);
-        public Task<Patient[]> GetPatientTemplates() => Task.FromResult(_patientTemplates.ToArray());
-        public Task<Patient> GetPatientTemplate(int index) => Task.FromResult(_patientTemplates[index]);
-        public async Task UpdatePatientTemplate(int index, Patient patient) => _patientTemplates[index] = patient;
-        public async Task RemovePatientTemplate(Patient patient)=> _patientTemplates.Remove(patient);
+        public async Task AddPatientTemplate(Patient patient) {
+            int count = _patientTemplates.Count();
+            PatientTemplate template = new PatientTemplate(count, patient);
+            _patientTemplates.Add(template); 
+        }
+        public Task<PatientTemplate[]> GetPatientTemplates() => Task.FromResult(_patientTemplates.ToArray());
+        public Task<PatientTemplate> GetPatientTemplate(int id) => Task.FromResult(_patientTemplates.Find(pt => pt.Id == id));
+        public async Task UpdatePatientTemplate(PatientTemplate template) {
+            int index = _patientTemplates.IndexOf(template);
+            _patientTemplates[index] = template;
+        }
+        public async Task RemovePatientTemplate(PatientTemplate template) {
+            _patientTemplates.Remove(template);
+            for(int i = 0; i < _patientTemplates.Count(); i++) _patientTemplates[i].Id = i;
+        }
         
 
-        private List<PatientTaskGroup> _taskTemplates = new();
+        private List<TasksTemplate> _taskTemplates = new();
 
-        public async Task AddTaskTemplate(PatientTaskGroup group) => _taskTemplates.Add(group);
-        public Task<PatientTaskGroup[]> GetTaskTemplates() => Task.FromResult(_taskTemplates.ToArray());
-        public Task<PatientTaskGroup> GetTaskTemplate(int index) => Task.FromResult(_taskTemplates[index]);
-        public async Task UpdateTaskTemplate(int index, PatientTaskGroup group) => _taskTemplates[index] = group;
-        public async Task RemoveTaskTemplate(PatientTaskGroup group) => _taskTemplates.Remove(group);
+        public async Task AddTaskTemplate(PatientTaskGroup group) {
+            int count = _taskTemplates.Count();
+            TasksTemplate tasks = new TasksTemplate(count, group);
+            _taskTemplates.Add(tasks);
+        }
+        public Task<TasksTemplate[]> GetTaskTemplates() => Task.FromResult(_taskTemplates.ToArray());
+        public Task<TasksTemplate> GetTaskTemplate(int id) => Task.FromResult(_taskTemplates.Find(t => t.Id == id));
+        public async Task UpdateTaskTemplate(TasksTemplate template) {
+            int index = _taskTemplates.IndexOf(template);
+            _taskTemplates[index] = template;
+        }
+        public async Task RemoveTaskTemplate(TasksTemplate template) {
+            _taskTemplates.Remove(template);
+            for (int i = 0; i < _taskTemplates.Count(); i++) _taskTemplates[i].Id = i;
+        }
     }
     }
