@@ -4,7 +4,7 @@
         public string Text { get; set; }
         public void SetValue(object value) {
             if (value.GetType() != typeof(string)) return;
-            Label = (string)value;
+            Text = (string)value;
         }
     }
 }

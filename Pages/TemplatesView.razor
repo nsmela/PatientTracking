@@ -1,58 +1,154 @@
 ﻿@page "/templates"
 
-<MudContainer Class="pa-1" Width="440px" >
-    @foreach(var pTemplate in _patientTemplates){
-        <p>@pTemplate.</p>
-    }
-    <!-- Add Group Template -->
-    <MudPaper Class="pa-4" Elevation="0">
-        @if (AddGroupOpen) {
-            <MudPaper Elevation="0" MinHeight="80px" Class="pa-2 ma-4 d-flex flex-column mud-background-gray rounded-lg">
-                <MudToolBar DisableGutters="true" Class="mud-secondary pa-4 ma-n2">
-                    @if (EditNameOpen) {
-                        <MudTextField @bind-Value="NewName" Placeholder="@Name" Label="Edit Group Name"
-                              DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2" TextChanged="(() => OnNameFieldChanged())" />
+<MudContainer Class="pa-1">
+    @foreach (var template in Templates) {
+        <MudPaper Width="560px" Class="ma-1" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
+            <MudToolBar DisableGutters="true">
+                <MudText Typo="Typo.h4" Class="pl-1">@template.Label</MudText>
+                <MudSpacer />
+                <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
+                     TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                    <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename Template</MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle">Remove Template</MudButton>
+                </MudMenu>
+            </MudToolBar>
+            @foreach (var group in template.Groups) {
+                <MudPaper Class="ma-2 pb-2" Style="@($"background:{Colors.BlueGrey.Darken1};")">
+                    <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                        <MudText Typo="Typo.h5" Class="pl-2">@group.Label</MudText>
+                        <MudSpacer />
+                        <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small"  />
+                        <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" />
+                        <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                         ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename Section</MudButton>
+                            <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle">Remove Template</MudButton>
+                        </MudMenu>
+                    </MudToolBar>
+                    @foreach (var task in group.Tasks) {
+                        if (EditTaskId == task.Id) {
+                            <MudToolBar Row="true" Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
+                                <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" Class="pl-2" Variant="Variant.Filled" />
+                                <MudSpacer />
+                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(task.Id))" />
+                                <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4 invisible" OnClick="(() => RemoveTask(group, task))" />
+                            </MudToolBar>
+                        }
+                        else {
+                            <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
+                                <MudText Typo="Typo.body1" Class="pl-2">@task.Label</MudText>
+                                <MudSpacer />
+                                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementTask(group, task))" />
+                                <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementTask(group, task))" />
+                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(task.Id))" />
+                                <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4" OnClick="(() => RemoveTask(group, task))" />
+                            </MudToolBar>
+                        }
                     }
-                    else {
-                        <MudText Typo="Typo.subtitle1"><b>@Name</b></MudText>
-                    }
-                    <MudSpacer />
-                    <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
-                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="(()=> EditNameOpen = true)">Rename Section</MudButton>
-                    </MudMenu>
-                </MudToolBar>
-                <MudStack Class="pt-4">
+                    <MudButton FullWidth="true"> New Task </MudButton>
 
-                </MudStack>
-            </MudPaper>
-        }
-        else {
-            <MudButton OnClick="(()=> AddGroupOpen = true)" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Group</MudButton>
-        }
-    </MudPaper>
+                </MudPaper>
+            }
+
+            <MudStack Rows="true" Spacing="1">
+                <MudButton> New Group </MudButton>
+                <MudButton> Reset </MudButton>
+                <MudButton> Save </MudButton>
+            </MudStack>
+        </MudPaper>
+    }
 </MudContainer>
+    }
+
 
 @code {
     [Inject] PatientService patientService { get; set; }
-    private PatientTemplate[] _patientTemplates;
+    private TaskGroupsTemplate[] _patientTemplates;
     private TasksTemplate[] _taskTemplates;
 
-    bool AddGroupOpen = false;
-    bool EditNameOpen = false;
-    string Name = "New Group";
-    string NewName = "New Group";
-    List<IPatientTask> Tasks = new();
-    int EditTaskIndex = -1;
+    private Template[] Templates {get; set;}
+    private TaskGroup[] GroupTemplates {get; set;}
 
-    protected override async Task OnInitializedAsync() {
-        _patientTemplates = await patientService.GetPatientTemplates();
-        _taskTemplates = await patientService.GetTaskTemplates();
+    int EditTaskId{ get; set; } = -1;
+    int AddTaskId { get; set; } = -1;
+
+    protected override async Task OnInitializedAsync(){
+        GroupTemplates = new TaskGroup[]{
+            new TaskGroup{Id = 0, Label = "General Tasks", Tasks = new List<TaskItem>{
+                new TaskItem{Id = 0, Label = "Approved by Oncologist"},
+                new TaskItem{Id = 1, Label = "Approved by Physics"},
+                new TaskItem{Id = 2, Label = "Approved by Chemotherapy"}}
+            },
+            new TaskGroup{Id = 1, Label = "Physics Planning", Tasks = new List<TaskItem>{
+                new TaskItem{Id = 3, Label = "Dry Run Completed"},
+                new TaskItem{Id = 4, Label = "VMAT QA Required"},
+            }},
+            new TaskGroup{Id = 2, Label = "Brachytherapy", Tasks = new List<TaskItem>{
+                new TaskItem{Id = 5, Label = "Seed Supply Checked"},
+                new TaskItem{Id = 6, Label = "Applicator Size Verified"},
+                new TaskItem{Id = 7, Label = "Patient Education Completed"},
+            }}
+    };
+
+        Templates = new Template[]{
+            new Template {Id = 0, Label = "Standard Patient", Groups = new List<TaskGroup>{
+                GroupTemplates[0], GroupTemplates[1]}
+            },
+            new Template {Id = 1, Label = "Brachy Patient", Groups = new List<TaskGroup>{
+                GroupTemplates[0], GroupTemplates[2]}
+            }
+    };
     }
 
-    private void OnNameFieldChanged() {
-        if (Name == NewName) return;
+    private void IncrementTask(TaskGroup group, TaskItem task) {
+        int index = group.Tasks.IndexOf(task);
+        if (index <= 0) return;
 
-        Name = NewName;
-        EditNameOpen = false;
+        group.Tasks.Remove(task);
+        group.Tasks.Insert(index - 1, task);
+    }
+
+    private void DecrementTask(TaskGroup group, TaskItem task) {
+        int index = group.Tasks.IndexOf(task);
+        if (index >= group.Tasks.Count() - 1) return; //already at bottom
+
+        group.Tasks.Remove(task);
+        group.Tasks.Add(task);
+    }
+
+    private void RemoveTask(TaskGroup group, TaskItem task){
+        group.Tasks.Remove(task);
+    }
+
+    private void EditTask(int id){
+        EditTaskId = id == EditTaskId ? -1 : id;
+    }
+
+    private void ToggleAddTask(int id){
+        if(AddTaskId != id){
+            AddTaskId = id;
+            return;
+        } 
+        AddTaskId = id == AddTaskId ? -1 : id;
+    }
+
+    public class TaskItem {
+        public int Id {get; set;}
+        public string Label {get; set;}
+    }
+
+    public struct TaskGroup {
+        public int Id {get; set;}
+        public string Label {get; set; }
+        public List<TaskItem> Tasks {get; set;}
+    }
+
+    public struct Template {
+        public int Id {get; set;}
+        public string Label {get; set;}
+        public List<TaskGroup> Groups {get; set;}   
     }
 }

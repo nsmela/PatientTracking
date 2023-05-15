@@ -1,31 +1,33 @@
 ﻿namespace PatientTracking.Data.Templates {
     using PatientTracking.Data.Patient;
+    using System.Reflection.Emit;
 
     public interface ITemplate {
         public int Id { get; set; }
-        public Object Template { get; init; }
-        public Object Type { get; }
+        public string Label { get; set; }
     }
 
-    public class PatientTemplate : ITemplate {
+    public class TaskGroupsTemplate : ITemplate {
         public int Id { get; set; }
-        public object Template { get; init; }
-        public Object Type => typeof(Patient);
+        public string Label { get; set; }
+        public List<PatientTaskGroup> Groups {get; set;}
 
-        public PatientTemplate(int id, Patient template) {
+        public TaskGroupsTemplate(int id, string label, List<PatientTaskGroup> template) {
             Id = id;
-            Template = template;
+            Label = label;
+            Groups = template;
         }
     }
 
     public class TasksTemplate : ITemplate {
         public int Id { get; set; }
-        public object Template { get; init; }
-        public Object Type => typeof(PatientTaskGroup);
+        public string Label { get; set; }
+        public PatientTaskGroup Tasks {get;set;}
 
-        public TasksTemplate(int id, PatientTaskGroup template) {
+        public TasksTemplate(int id, string label, PatientTaskGroup template) {
             Id = id;
-            Template = template;
+            Label = label;
+            Tasks = template;
         }
     }
 }
