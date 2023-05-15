@@ -27,12 +27,12 @@
                         </MudMenu>
                     </MudToolBar>
                     @foreach (var task in group.Tasks) {
-                        if (EditTaskId == task.Id) {
+                        @if (EditTaskId[0] == group.Id && EditTaskId[1] == group.Tasks.IndexOf(task)) {
                             <MudToolBar Row="true" Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
                                 <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
                                 <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" Class="pl-2" Variant="Variant.Filled" />
                                 <MudSpacer />
-                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(task.Id))" />
+                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(group.Id, group.Tasks.IndexOf(task)))" />
                                 <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4 invisible" OnClick="(() => RemoveTask(group, task))" />
                             </MudToolBar>
                         }
@@ -43,12 +43,19 @@
                                 <MudSpacer />
                                 <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementTask(group, task))" />
                                 <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementTask(group, task))" />
-                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(task.Id))" />
+                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTask(group.Id, group.Tasks.IndexOf(task)))" />
                                 <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4" OnClick="(() => RemoveTask(group, task))" />
                             </MudToolBar>
                         }
                     }
-                    <MudButton FullWidth="true"> New Task </MudButton>
+                    @if(AddTaskId > -1 && AddTaskId == group.Id){
+                        <MudPaper Outlined="true" Class="ma-1 pa-1" >
+                            <MudTextField @bind-Value="newTaskLabel" Placeholder="New Task" DisableUnderLine="true" />
+                            <MudButton FullWidth="true" OnClick="(() => AddTaskToGroup(group))"> Add Task </MudButton>
+                        </MudPaper>
+                    }else {
+                        <MudButton FullWidth="true" OnClick="(() => ToggleAddTask(group.Id))"> New Task </MudButton>
+                    }
 
                 </MudPaper>
             }
@@ -72,8 +79,10 @@
     private Template[] Templates {get; set;}
     private TaskGroup[] GroupTemplates {get; set;}
 
-    int EditTaskId{ get; set; } = -1;
     int AddTaskId { get; set; } = -1;
+    int[] EditTaskId { get; set; } = new int[] { -1, -1 };
+
+    string newTaskLabel { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync(){
         GroupTemplates = new TaskGroup[]{
@@ -123,16 +132,28 @@
         group.Tasks.Remove(task);
     }
 
-    private void EditTask(int id){
-        EditTaskId = id == EditTaskId ? -1 : id;
+    private void EditTask(int groupId, int taskId){
+        EditTaskId[0] = groupId;
+        EditTaskId[1] = taskId;
     }
 
-    private void ToggleAddTask(int id){
-        if(AddTaskId != id){
-            AddTaskId = id;
+    private void ToggleAddTask(int groupId){
+        if(AddTaskId != groupId){
+            AddTaskId = groupId;
             return;
         } 
-        AddTaskId = id == AddTaskId ? -1 : id;
+
+        AddTaskId = groupId == AddTaskId ? -1 : groupId;
+    }
+
+    private void AddTaskToGroup(TaskGroup group){
+        if (AddTaskId < 0) return;
+
+        var task = new TaskItem { Id = 8, Label = newTaskLabel };
+        group.Tasks.Add(task);
+
+        AddTaskId = -1;
+        newTaskLabel = string.Empty;
     }
 
     public class TaskItem {
