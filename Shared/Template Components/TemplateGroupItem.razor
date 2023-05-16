@@ -1,0 +1,72 @@
+﻿<MudPaper Class="ma-2 pb-2" Style="@($"background:{Colors.BlueGrey.Darken1};")">
+    @if (Editing && editMode) {
+        <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+        <MudTextField @bind-Value="Group.Label" Placeholder="@Group.Label"  
+                    Class="pl-2" Variant="Variant.Filled" Immediate="false"/>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small"  />
+        </MudToolBar>
+    }else{
+        <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+            <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementGroup())" />
+            <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small"  />
+            <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" >Rename Section</MudButton>
+                <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" >Remove Group</MudButton>
+            </MudMenu>
+        </MudToolBar>
+    }
+    <!-- Tasks -->
+    @foreach (var task in Group.Tasks) {
+        <TemplateTaskItem Group=@Group Task=@task GroupChanged=@OnGroupUpdated Editing=@true />
+    }
+    @if(Editing && newTaskOpen){
+        <MudPaper Outlined="true" Class="ma-1 pa-1" >
+            <MudTextField @bind-Value="newTaskLabel" Placeholder="New Task" DisableUnderLine="true" />
+            <MudButton FullWidth="true" > Add Task </MudButton>
+        </MudPaper>
+    }else {
+        <MudButton FullWidth="true" OnClick="(() => newTaskOpen = true)"> New Task </MudButton>
+    }
+
+</MudPaper>
+
+
+@code {
+    [Parameter] public TaskGroup Group { get; set; }
+    [Parameter] public Template PatientTemplate { get; set; }
+    [Parameter] public bool Editing { get; set; } = false;
+    [Parameter] public EventCallback<Template> TemplateChanged { get; set; } 
+
+    bool editMode = false;
+    bool newTaskOpen = false;
+
+    string newTaskLabel = string.Empty;
+
+    //functions
+    async Task IncrementGroup(){
+        int index = PatientTemplate.Groups.IndexOf(Group);
+        if (index <= 0) return;
+
+        PatientTemplate.Groups.Remove(Group);
+        PatientTemplate.Groups.Insert(index - 1, Group);
+
+        await TemplateChanged.InvokeAsync(PatientTemplate);
+    }
+
+    //callbacks
+    private async Task OnGroupUpdated(TaskGroup group){
+            foreach(var tGroup in PatientTemplate.Groups){
+                if(tGroup == group){
+                    int groupIndex = PatientTemplate.Groups.IndexOf(tGroup);
+                    PatientTemplate.Groups[groupIndex] = group;
+                    await TemplateChanged.InvokeAsync(PatientTemplate);
+                    return;
+                }
+            }
+        
+    }
+}
