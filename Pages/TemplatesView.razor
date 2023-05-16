@@ -10,8 +10,8 @@
                 <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
                      TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
                     <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
-                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename Template</MudButton>
-                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle">Remove Template</MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="@(()=> SetActiveTemplate(template))">Edit Template</MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick="@(()=> RemoveTemplate(template))">Remove Template</MudButton>
                 </MudMenu>
             </MudToolBar>
             <!-- Groups -->
@@ -73,15 +73,18 @@
                 </MudPaper>
             }
 
-            <MudStack Rows="true" Spacing="1">
-                <MudButton> New Group </MudButton>
-                <MudButton> Reset </MudButton>
-                <MudButton> Save </MudButton>
-            </MudStack>
+            @if (IsActiveTemplate(template))
+            {
+                <MudStack Rows="true" Spacing="1">
+                    <MudButton> New Group </MudButton>
+                    <MudButton OnClick="@(()=> ResetTemplate(template))"> Reset </MudButton>
+                <MudButton  OnClick="@(()=> SaveTemplate(template))"> Save </MudButton>
+               </MudStack>
+            }
         </MudPaper>
     }
 </MudContainer>
-    }
+    
 
 
 @code {
@@ -229,8 +232,50 @@
     }
     #endregion
 
+    #region Template Functions
+    Template? activeTemplate = null;
+
+    private void SetActiveTemplate(Template template){
+        if(activeTemplate is not null) return; //need to save/clear previously opened template first
+
+        activeTemplate = template;
+    }
+
+    private void SaveTemplate(Template template){
+        if (!IsActiveTemplate(template)) return;
+
+        //send values to database to save
+        int index = Array.IndexOf(Templates, template);
+        Templates[index] = template;
+
+        //remove form from editing
+        activeTemplate = null;
+    }
+
+    private void ResetTemplate(Template template){
+        if (!IsActiveTemplate(template)) return;
+
+        //grab original from service
+        int index = Array.IndexOf(Templates, template);
+        template = Templates[index];
+    }
+    private void RemoveTemplate(Template template){
+        int index = Array.IndexOf(Templates, template);
+        if (index < 0) return; //doesn't exist
+
+        var templates = new List<Template>();
+        for(int i = 0; i < Templates.Length; i++) if (Templates[i] != template) templates.Add(Templates[i]);
+
+        Templates = templates.ToArray();
+    }
+    #endregion
+
     //check if template is the actively edited template
-    private bool IsActiveTemplate(){
+    private bool IsActiveTemplate(Template template){
+        if (activeTemplate is null) return false;
+        if(template is null) return false;
+        if (activeTemplate != template) return false;
+
         return true;
     }
 
@@ -259,7 +304,7 @@
         }
     }
 
-    public struct Template {
+    public class Template {
         public int Id {get; set;}
         public string Label {get; set;}
         public List<TaskGroup> Groups {get; set;}   
