@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using PatientTracking.Data;
 using MudBlazor.Services;
 using PatientTracking.Data.Patient;
+using PatientTracking.Data.Templates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<PatientService>();
+builder.Services.AddSingleton<TemplateService>();
 
 var app = builder.Build();
 

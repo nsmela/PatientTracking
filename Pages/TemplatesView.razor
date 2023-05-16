@@ -17,7 +17,7 @@
             <!-- Groups -->
             @foreach (var group in template.Groups) {
                 <MudPaper Class="ma-2 pb-2" Style="@($"background:{Colors.BlueGrey.Darken1};")">
-                    @if (OpenedGroupForEditing is not null && OpenedGroupForEditing.Value.Key.Equals(template) && OpenedGroupForEditing.Value.Value.Equals(group)) {
+                    @if (IsActiveTemplate(template) && OpenedGroupForEditing is not null && OpenedGroupForEditing.Value.Key.Equals(template) && OpenedGroupForEditing.Value.Value.Equals(group)) {
                         <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
                         <MudTextField @bind-Value="group.Label" Placeholder="@group.Label" TextChanged="@(()=> EditGroupSubmit())" 
                                     Class="pl-2" Variant="Variant.Filled" Immediate="false"/>
@@ -33,33 +33,13 @@
                             <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
                              ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
                                 <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="(() => OpenGroupNameEdit(template, group))">Rename Section</MudButton>
-                                <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick="(() => RemoveGroup(template, group))">Remove Template</MudButton>
+                                <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick="(() => RemoveGroup(template, group))">Remove Group</MudButton>
                             </MudMenu>
                         </MudToolBar>
                     }
                     <!-- Tasks -->
                     @foreach (var task in group.Tasks) {
-                        @if (EditTaskId[0] == template.Id && EditTaskId[1] == group.Id && EditTaskId[2] == group.Tasks.IndexOf(task)) {
-                            <MudToolBar Row="true" Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-                                <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
-                                <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" TextChanged="@(()=> EditTaskSubmit())" 
-                                    Class="pl-2" Variant="Variant.Filled" Immediate="false"/>
-                                <MudSpacer />
-                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => EditTaskSubmit())" />
-                                <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4 invisible" OnClick="(() => RemoveTask(group, task))" />
-                            </MudToolBar>
-                        }
-                        else {
-                            <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-                                <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
-                                <MudText Typo="Typo.body1" Class="pl-2">@task.Label</MudText>
-                                <MudSpacer />
-                                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementTask(group, task))" />
-                                <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementTask(group, task))" />
-                                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(() => OpenEditTask(template.Id, group.Id, group.Tasks.IndexOf(task)))" />
-                                <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" Class="pl-4" OnClick="(() => RemoveTask(group, task))" />
-                            </MudToolBar>
-                        }
+                        <TemplateTaskItem Group=@group Task=@task GroupChanged=@OnGroupUpdated Editing=@true />
                     }
                     @if(AddTaskId[0] == template.Id && AddTaskId[1] == group.Id){
                         <MudPaper Outlined="true" Class="ma-1 pa-1" >
@@ -89,6 +69,7 @@
 
 @code {
     [Inject] PatientService patientService { get; set; }
+    [Inject] TemplateService templateService { get; set; }
     private TaskGroupsTemplate[] _patientTemplates;
     private TasksTemplate[] _taskTemplates;
 
@@ -99,31 +80,34 @@
     int activeTemplateId = -1;
 
     protected override async Task OnInitializedAsync(){
-        GroupTemplates = new TaskGroup[]{
-            new TaskGroup{Id = 0, Label = "General Tasks", Tasks = new List<TaskItem>{
-                new TaskItem{Label = "Approved by Oncologist"},
-                new TaskItem{Label = "Approved by Physics"},
-                new TaskItem{Label = "Approved by Chemotherapy"}}
-            },
-            new TaskGroup{Id = 1, Label = "Physics Planning", Tasks = new List<TaskItem>{
-                new TaskItem{Label = "Dry Run Completed"},
-                new TaskItem{Label = "VMAT QA Required"},
-            }},
-            new TaskGroup{Id = 2, Label = "Brachytherapy", Tasks = new List<TaskItem>{
-                new TaskItem{Label = "Seed Supply Checked"},
-                new TaskItem{Label = "Applicator Size Verified"},
-                new TaskItem{Label = "Patient Education Completed"},
-            }}
-    };
+        GetTemplates();
+    }
 
-        Templates = new Template[]{
-            new Template {Id = 0, Label = "Standard Patient", Groups = new List<TaskGroup>{
-                GroupTemplates[0].Copy(), GroupTemplates[1].Copy()}
-            },
-            new Template {Id = 1, Label = "Brachy Patient", Groups = new List<TaskGroup>{
-                GroupTemplates[0].Copy(), GroupTemplates[2].Copy()}
-            }
-    };
+    private async Task GetTemplates(){
+        var result = await templateService.GetAllTemplates();
+        var templates = new List<Template>();
+
+        result.ForEach(r => {
+            var template = new Template {
+                    Label = r.Label,
+                    Id = r.Id,
+                    Groups = new List<TaskGroup>()
+                };
+
+            var groups = new List<TaskGroup>();
+            r.Groups.ForEach(g => {
+                var group = new TaskGroup {
+                        Label = g.Label,
+                        Tasks = new List<TaskItem>()
+                    };
+                g.Tasks.ForEach(t => group.Tasks.Add(new TaskItem { Label = t.Label }));
+                groups.Add(group);
+            });
+            template.Groups = groups;
+            templates.Add(template);
+        });
+
+        Templates = templates.ToArray();
     }
 
     #region Task Functions
@@ -188,6 +172,20 @@
         AddTaskId = new int[] { -1, -1 };
         newTaskLabel = string.Empty;
     }
+
+    private async Task OnGroupUpdated(TaskGroup group){
+        foreach(var template in Templates){
+            foreach(var tGroup in template.Groups){
+                if(tGroup == group){
+                    int index = Array.IndexOf(Templates, template);
+                    int groupIndex = template.Groups.IndexOf(tGroup);
+                    Templates[index].Groups[groupIndex] = group;
+                    return;
+                }
+            }
+        }
+    }
+
     #endregion
 
     #region Group Functions
@@ -241,24 +239,24 @@
         activeTemplate = template;
     }
 
-    private void SaveTemplate(Template template){
+    private async Task SaveTemplate(Template template){
         if (!IsActiveTemplate(template)) return;
+        if(template == null) return;
 
         //send values to database to save
-        int index = Array.IndexOf(Templates, template);
-        Templates[index] = template;
+        await templateService.UpdateTemplate(template);
 
         //remove form from editing
         activeTemplate = null;
     }
 
-    private void ResetTemplate(Template template){
+    private async Task ResetTemplate(Template template){
         if (!IsActiveTemplate(template)) return;
 
         //grab original from service
-        int index = Array.IndexOf(Templates, template);
-        template = Templates[index];
+        GetTemplates();
     }
+
     private void RemoveTemplate(Template template){
         int index = Array.IndexOf(Templates, template);
         if (index < 0) return; //doesn't exist
@@ -281,32 +279,4 @@
 
     //submit edited task
 
-
-    public class TaskItem {
-        public string Label {get; set;}
-    }
-
-    public class TaskGroup {
-        public int Id {get; set;}
-        public string Label {get; set; }
-        public List<TaskItem> Tasks {get; set;}
-
-        public TaskGroup Copy(){
-            var tasks = new List<TaskItem>();
-            Tasks.ForEach(t => tasks.Add(new TaskItem {Label = t.Label }));
-
-            return new TaskGroup {
-                    Id = this.Id,
-                    Label = this.Label,
-                    Tasks = tasks
-            };
-
-        }
-    }
-
-    public class Template {
-        public int Id {get; set;}
-        public string Label {get; set;}
-        public List<TaskGroup> Groups {get; set;}   
-    }
 }
