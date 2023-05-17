@@ -3,31 +3,7 @@
 <MudContainer Class="pa-1">
     <!-- Templates -->
     @foreach (var template in Templates) {
-        <MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
-            <MudToolBar DisableGutters="true">
-                <MudText Typo="Typo.h4" Class="pl-1">@template.Label</MudText>
-                <MudSpacer />
-                <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
-                     TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
-                    <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
-                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick="@(()=> SetActiveTemplate(template))">Edit Template</MudButton>
-                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick="@(()=> RemoveTemplate(template))">Remove Template</MudButton>
-                </MudMenu>
-            </MudToolBar>
-            <!-- Groups -->
-            @foreach (var group in template.Groups) {
-                <TemplateGroupItem Editing=@true Group=@group PatientTemplate=@template TemplateChanged=@OnTemplateUpdated />
-            }
-
-            @if (IsActiveTemplate(template))
-            {
-                <MudStack Rows="true" Spacing="1">
-                    <MudButton> New Group </MudButton>
-                    <MudButton OnClick="@(()=> ResetTemplate(template))"> Reset </MudButton>
-                <MudButton  OnClick="@(()=> SaveTemplate(template))"> Save </MudButton>
-               </MudStack>
-            }
-        </MudPaper>
+        <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplatesChanged=@OnTemplatesChanged />
     }
 </MudContainer>
     
@@ -74,6 +50,11 @@
         });
 
         Templates = templates.ToArray();
+    }
+
+    async Task OnTemplatesChanged(TemplateItem[] templates){
+        Templates = templates;
+        StateHasChanged();
     }
 
     #region Task Functions

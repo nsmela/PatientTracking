@@ -1,0 +1,65 @@
+﻿<MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
+    <MudToolBar DisableGutters="true">
+        <MudText Typo="Typo.h4" Class="pl-1">@PatientTemplate.Label</MudText>
+        <MudSpacer />
+        <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
+                TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+            <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
+            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@EditTemplate >Edit Template</MudButton>
+            <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveTemplate >Remove Template</MudButton>
+        </MudMenu>
+    </MudToolBar>
+    <!-- Groups -->
+    @foreach (var group in PatientTemplate.Groups){
+        <TemplateGroupItem Editing=@true Group=@group PatientTemplate=@PatientTemplate TemplateChanged=@OnTemplateUpdated />
+    }
+
+    @if (editMode) {
+        <MudStack Rows="true" Spacing="1">
+            <MudButton> New Group </MudButton>
+            <MudButton OnClick=@ResetTemplate> Reset </MudButton>
+        <MudButton  OnClick=@SaveTemplate> Save </MudButton>
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public TemplateItem PatientTemplate { get; set; }
+    [Parameter] public TemplateItem[] Templates { get; set; }
+    [Parameter] public EventCallback<TemplateItem[]> TemplatesChanged {get; set;}
+
+    TemplateItem? oldTemplate = null;
+    bool editMode = false;
+
+    async Task EditTemplate(){
+        oldTemplate = PatientTemplate.Copy();
+        editMode = true;
+    }
+
+    async Task ResetTemplate(){
+        if (oldTemplate is null) return;
+
+        PatientTemplate = oldTemplate;
+        await TemplatesChanged.InvokeAsync(Templates);
+    }
+
+    async Task RemoveTemplate(){
+        int index = Array.IndexOf(Templates, PatientTemplate);
+        var newArray = new List<TemplateItem>();
+
+        foreach (var template in Templates) if (template != PatientTemplate) newArray.Add(template);
+
+        Templates = newArray.ToArray();
+        await TemplatesChanged.InvokeAsync(Templates);
+    }
+
+    async Task SaveTemplate(){
+
+    }
+
+    async Task OnTemplateUpdated(TemplateItem template){
+        int index = Array.IndexOf(Templates, PatientTemplate);
+        Templates[index] = template;
+        await TemplatesChanged.InvokeAsync(Templates);
+    }
+}
