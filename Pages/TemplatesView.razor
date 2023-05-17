@@ -3,7 +3,7 @@
 <MudContainer Class="pa-1">
     <!-- Templates -->
     @foreach (var template in Templates) {
-        <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplatesChanged=@OnTemplatesChanged />
+        <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged />
     }
 </MudContainer>
     
@@ -52,9 +52,11 @@
         Templates = templates.ToArray();
     }
 
-    async Task OnTemplatesChanged(TemplateItem[] templates){
-        Templates = templates;
+    async Task OnTemplatesChanged(TemplateItem template){
+        await templateService.UpdateTemplate(template);
+        GetTemplates();
         StateHasChanged();
+
     }
 
     #region Task Functions

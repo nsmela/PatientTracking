@@ -1,6 +1,6 @@
 ﻿<MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
     <MudToolBar DisableGutters="true">
-        <MudText Typo="Typo.h4" Class="pl-1">@PatientTemplate.Label</MudText>
+        <MudText Typo="Typo.h4" Class="pl-1">@newTemplate.Label</MudText>
         <MudSpacer />
         <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
                 TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
@@ -10,13 +10,20 @@
         </MudMenu>
     </MudToolBar>
     <!-- Groups -->
-    @foreach (var group in PatientTemplate.Groups){
-        <TemplateGroupItem Editing=@true Group=@group PatientTemplate=@PatientTemplate TemplateChanged=@OnTemplateUpdated />
+    @foreach (var group in newTemplate.Groups){
+        <TemplateGroupItem Editing=@editMode Group=@group PatientTemplate=@newTemplate TemplateChanged=@OnTemplateUpdated />
     }
 
     @if (editMode) {
         <MudStack Rows="true" Spacing="1">
-            <MudButton> New Group </MudButton>
+            @if(newGroupOpen){
+                <MudPaper Outlined="true" Class="ma-1 pa-1" >
+                    <MudTextField @bind-Value="newGroupLabel" Placeholder="New Group" DisableUnderLine="true" />
+                    <MudButton FullWidth="true" OnClick=@SubmitNewGroup> Add Task </MudButton>
+                </MudPaper>
+            }else {
+                <MudButton OnClick=@(()=> newGroupOpen = true)> New Group </MudButton>
+            }
             <MudButton OnClick=@ResetTemplate> Reset </MudButton>
         <MudButton  OnClick=@SaveTemplate> Save </MudButton>
         </MudStack>
@@ -26,21 +33,32 @@
 @code {
     [Parameter] public TemplateItem PatientTemplate { get; set; }
     [Parameter] public TemplateItem[] Templates { get; set; }
-    [Parameter] public EventCallback<TemplateItem[]> TemplatesChanged {get; set;}
+    [Parameter] public EventCallback<TemplateItem> TemplateChanged {get; set;}
 
-    TemplateItem? oldTemplate = null;
+    TemplateItem newTemplate = null;
     bool editMode = false;
+    bool newGroupOpen = false;
+    string newGroupLabel = string.Empty;
+
+    protected override async Task OnParametersSetAsync() {
+        newTemplate = PatientTemplate.Copy();
+    }
+
+    async Task SubmitNewGroup(){
+        var group = new TaskGroup { Label = newGroupLabel, Tasks = new() };
+        newTemplate.Groups.Add(group);
+
+        newGroupOpen = false;
+        newGroupLabel = string.Empty;
+    }
 
     async Task EditTemplate(){
-        oldTemplate = PatientTemplate.Copy();
         editMode = true;
     }
 
     async Task ResetTemplate(){
-        if (oldTemplate is null) return;
-
-        PatientTemplate = oldTemplate;
-        await TemplatesChanged.InvokeAsync(Templates);
+        newTemplate = PatientTemplate.Copy();
+        StateHasChanged();
     }
 
     async Task RemoveTemplate(){
@@ -50,16 +68,16 @@
         foreach (var template in Templates) if (template != PatientTemplate) newArray.Add(template);
 
         Templates = newArray.ToArray();
-        await TemplatesChanged.InvokeAsync(Templates);
+        await TemplateChanged.InvokeAsync(PatientTemplate);
     }
 
     async Task SaveTemplate(){
-
+        PatientTemplate = newTemplate;
+        await TemplateChanged.InvokeAsync(newTemplate);
+        editMode = false;
     }
 
     async Task OnTemplateUpdated(TemplateItem template){
-        int index = Array.IndexOf(Templates, PatientTemplate);
-        Templates[index] = template;
-        await TemplatesChanged.InvokeAsync(Templates);
+        newTemplate = template;
     }
 }

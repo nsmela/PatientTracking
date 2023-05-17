@@ -72,10 +72,7 @@
 
         public async Task AddTemplate(TemplateItem template) => _templates.Add(template);
         public async Task UpdateTemplate(TemplateItem template) {
-            int index = _templates.IndexOf(template);
-            if (index < 0) return;
-
-            _templates[index] = template;
+            _templates[template.Id] = template;
         }
         public async Task RemoveTemplate(int index) {
             if (index < 0) return;
