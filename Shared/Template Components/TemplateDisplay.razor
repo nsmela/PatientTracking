@@ -5,7 +5,10 @@
         <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
                 TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
             <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
-            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@EditTemplate >Edit Template</MudButton>
+            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@EditTemplate >
+                @(editMode ? "Cancel Edit" : "Edit Template" )
+                
+            </MudButton>
             <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveTemplate >Remove Template</MudButton>
         </MudMenu>
     </MudToolBar>
@@ -53,7 +56,7 @@
     }
 
     async Task EditTemplate(){
-        editMode = true;
+        editMode = !editMode;
     }
 
     async Task ResetTemplate(){
