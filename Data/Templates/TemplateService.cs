@@ -22,14 +22,15 @@
         }
     }
 
-    public class Template {
+    public class TemplateItem {
         public int Id { get; set; }
         public string Label { get; set; }
         public List<TaskGroup> Groups { get; set; }
+        public int EditableGroupIndex { get; set; } = -1;
     }
 
     public class TemplateService {
-        private List<Template> _templates { get; set; }
+        private List<TemplateItem> _templates { get; set; }
         private TaskGroup[] _groupTemplates { get; set; }
 
         public TemplateService() {
@@ -50,22 +51,22 @@
                 }}
             };
 
-            _templates = new List<Template>{
-                new Template {Id = 0, Label = "Standard Patient", Groups = new List<TaskGroup>{
+            _templates = new List<TemplateItem>{
+                new TemplateItem {Id = 0, Label = "Standard Patient", Groups = new List<TaskGroup>{
                     _groupTemplates[0].Copy(), _groupTemplates[1].Copy()}
                 },
-                new Template {Id = 1, Label = "Brachy Patient", Groups = new List<TaskGroup>{
+                new TemplateItem {Id = 1, Label = "Brachy Patient", Groups = new List<TaskGroup>{
                     _groupTemplates[0].Copy(), _groupTemplates[2].Copy()}
                 }
             };
         }
 
-        public async Task<List<Template>> GetAllTemplates() => _templates;
+        public async Task<List<TemplateItem>> GetAllTemplates() => _templates;
 
-        public async Task<Template> GetTemplate(int index) => _templates[index];
+        public async Task<TemplateItem> GetTemplate(int index) => _templates[index];
 
-        public async Task AddTemplate(Template template) => _templates.Add(template);
-        public async Task UpdateTemplate(Template template) {
+        public async Task AddTemplate(TemplateItem template) => _templates.Add(template);
+        public async Task UpdateTemplate(TemplateItem template) {
             int index = _templates.IndexOf(template);
             if (index < 0) return;
 
