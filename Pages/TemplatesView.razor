@@ -59,7 +59,7 @@
                         Label = g.Label,
                         Tasks = new List<TaskItem>()
                     };
-                g.Tasks.ForEach(t => group.Tasks.Add(new TaskItem { Label = t.Label }));
+                g.Tasks.ForEach(t => group.Tasks.Add(new TaskItem { Label = t.Label, Type = t.Type }));
                 groups.Add(group);
             });
             template.Groups = groups;

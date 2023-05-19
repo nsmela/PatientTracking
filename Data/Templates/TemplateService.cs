@@ -1,6 +1,7 @@
 ﻿namespace PatientTracking.Data.Templates {
     public class TaskItem {
         public string Label { get; set; }
+        public Object Type { get; set; } = typeof(bool);
     }
 
     public class TaskGroup {
@@ -11,7 +12,7 @@
 
         public TaskGroup Copy() {
             var tasks = new List<TaskItem>();
-            Tasks.ForEach(t => tasks.Add(new TaskItem { Label = t.Label }));
+            Tasks.ForEach(t => tasks.Add(new TaskItem { Label = t.Label, Type = t.Type }));
 
             return new TaskGroup {
                 Id = this.Id,
@@ -44,18 +45,18 @@
         public TemplateService() {
             _groupTemplates = new TaskGroup[]{
                 new TaskGroup{Id = 0, Label = "General Tasks", Tasks = new List<TaskItem>{
-                    new TaskItem{Label = "Approved by Oncologist"},
-                    new TaskItem{Label = "Approved by Physics"},
-                    new TaskItem{Label = "Approved by Chemotherapy"}}
+                    new TaskItem{Label = "Approved by Oncologist", Type=typeof(bool) },
+                    new TaskItem{Label = "Approved by Physics", Type=typeof(string)},
+                    new TaskItem{Label = "Approved by Chemotherapy", Type=typeof(bool)}}
                 },
                 new TaskGroup{Id = 1, Label = "Physics Planning", Tasks = new List<TaskItem>{
-                    new TaskItem{Label = "Dry Run Completed"},
-                    new TaskItem{Label = "VMAT QA Required"},
+                    new TaskItem{Label = "Dry Run Completed", Type = typeof(List<string>)},
+                    new TaskItem{Label = "VMAT QA Required", Type = typeof(double)},
                 }},
                 new TaskGroup{Id = 2, Label = "Brachytherapy", Tasks = new List<TaskItem>{
-                    new TaskItem{Label = "Seed Supply Checked"},
-                    new TaskItem{Label = "Applicator Size Verified"},
-                    new TaskItem{Label = "Patient Education Completed"},
+                    new TaskItem{Label = "Seed Supply Checked", Type = typeof(bool)},
+                    new TaskItem{Label = "Applicator Size Verified", Type = typeof(bool)},
+                    new TaskItem{Label = "Patient Education Completed", Type = typeof(bool)},
                 }}
             };
 

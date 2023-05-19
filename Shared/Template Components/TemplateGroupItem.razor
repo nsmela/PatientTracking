@@ -28,7 +28,7 @@
 
     <!-- Tasks -->
     @foreach (var task in Group.Tasks) {
-        <TemplateTaskItem Group=@Group Task=@task GroupChanged=@OnGroupUpdated Editing=@Editing />
+        <TemplateTaskItem Group="@Group" Task="@task" GroupChanged="@OnGroupUpdated" Editing="@Editing" />
     }
     @if(Editing){
         if(newTaskOpen){
