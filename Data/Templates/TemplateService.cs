@@ -27,12 +27,15 @@
         public string Label { get; set; }
         public List<TaskGroup> Groups { get; set; }
         public int EditableGroupIndex { get; set; } = -1;
+        public TemplateStatus Status { get; set; } = TemplateStatus.Active;
         public TemplateItem Copy() {
             var template = new TemplateItem { Label = this.Label, Id= this.Id, EditableGroupIndex = this.EditableGroupIndex, Groups = new List<TaskGroup>() };
             Groups.ForEach(g => template.Groups.Add(g.Copy()));
             return template;
         }
     }
+
+    public enum TemplateStatus { New, Active, Retired, Delete }
 
     public class TemplateService {
         private List<TemplateItem> _templates { get; set; }

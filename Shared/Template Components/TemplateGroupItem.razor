@@ -30,13 +30,15 @@
     @foreach (var task in Group.Tasks) {
         <TemplateTaskItem Group=@Group Task=@task GroupChanged=@OnGroupUpdated Editing=@Editing />
     }
-    @if(Editing && newTaskOpen){
+    @if(Editing){
+        if(newTaskOpen){
         <MudPaper Outlined="true" Class="ma-1 pa-1" >
             <MudTextField @bind-Value="newTaskLabel" Placeholder="New Task" DisableUnderLine="true" />
             <MudButton FullWidth="true" OnClick=@SubmitNewTask> Add Task </MudButton>
         </MudPaper>
-    }else {
-        <MudButton FullWidth="true" OnClick="(() => newTaskOpen = true)"> New Task </MudButton>
+        }else {
+            <MudButton FullWidth="true" OnClick="(() => newTaskOpen = true)"> New Task </MudButton>
+        }
     }
 
 </MudPaper>

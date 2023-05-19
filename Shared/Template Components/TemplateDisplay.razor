@@ -7,7 +7,6 @@
             <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
             <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@EditTemplate >
                 @(editMode ? "Cancel Edit" : "Edit Template" )
-                
             </MudButton>
             <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveTemplate >Remove Template</MudButton>
         </MudMenu>
@@ -65,6 +64,10 @@
     }
 
     async Task RemoveTemplate(){
+        PatientTemplate.Status = TemplateStatus.Delete; //used to signify the template needs to be deleted
+        await TemplateChanged.InvokeAsync(PatientTemplate);
+        return;
+
         int index = Array.IndexOf(Templates, PatientTemplate);
         var newArray = new List<TemplateItem>();
 

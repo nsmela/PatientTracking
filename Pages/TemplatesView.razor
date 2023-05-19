@@ -1,10 +1,26 @@
 ﻿@page "/templates"
 
-<MudContainer Class="pa-1">
+<MudContainer Class="pa-1 align-items-baseline">
+    <MudPaper MaxHeight="64px" MaxWidth="660px" Class="pa-2 ma-2">
+        <MudStack Row="true">
+            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newTemplateOpen = true)">Add Template </MudButton>
+            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+        </MudStack>
+    </MudPaper>
     <!-- Templates -->
-    @foreach (var template in Templates) {
-        <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged />
-    }
+    <MudStack Row=@true >
+        <!-- New Template -->
+        @if(newTemplateOpen){
+            <MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")" >
+                <MudTextField @bind-Value="newTemplateLabel" Placeholder="New Template" DisableUnderLine="true" />
+                <MudButton OnClick="AddTemplate" >Add Template</MudButton>
+            </MudPaper>
+        }
+        <!-- Template List -->
+        @foreach (var template in Templates) {
+            <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged />
+        }   
+    </MudStack>
 </MudContainer>
     
 
@@ -16,10 +32,11 @@
     private TasksTemplate[] _taskTemplates;
 
     private TemplateItem[] Templates {get; set;}
-    private TaskGroup[] GroupTemplates {get; set;}
-
+    private TaskGroup[] GroupTemplates { get; set; }
 
     int activeTemplateId = -1;
+    bool newTemplateOpen = false;
+    string newTemplateLabel = string.Empty;
 
     protected override async Task OnInitializedAsync(){
         GetTemplates();
@@ -52,152 +69,22 @@
         Templates = templates.ToArray();
     }
 
+    async Task AddTemplate(){
+        var template = new TemplateItem { Label = newTemplateLabel, EditableGroupIndex = -1, Groups = new(), Id = Templates.Length };
+        await templateService.AddTemplate(template);
+
+        newTemplateOpen = false;
+        newTemplateLabel = string.Empty;
+
+        GetTemplates();
+        StateHasChanged();
+    }
+
     async Task OnTemplatesChanged(TemplateItem template){
-        await templateService.UpdateTemplate(template);
+        if (template.Status == TemplateStatus.Delete) await templateService.RemoveTemplate(template.Id);
+        else await templateService.UpdateTemplate(template);
         GetTemplates();
         StateHasChanged();
 
     }
-
-    #region Task Functions
-    int[] AddTaskId = new int[] { -1, -1 };
-    string newTaskLabel = string.Empty;
-
-    private void ToggleAddTask(int templateId, int groupId){
-        if(AddTaskId[0] == templateId && AddTaskId[1] == groupId){
-            AddTaskId = new int[] { -1, -1 };
-            return;
-        }
-
-        AddTaskId = new int[] { templateId, groupId };
-    }
-
-    private void AddTaskToGroup(TaskGroup group){
-        if (AddTaskId[0] < 0 || AddTaskId[1] < 0) return;
-
-        if (newTaskLabel is not null && newTaskLabel != string.Empty) {
-            var task = new TaskItem { Label = newTaskLabel };
-            group.Tasks.Add(task);
-        }
-
-        AddTaskId = new int[] { -1, -1 };
-        newTaskLabel = string.Empty;
-    }
-
-    private async Task OnGroupUpdated(TaskGroup group){
-        foreach(var template in Templates){
-            foreach(var tGroup in template.Groups){
-                if(tGroup == group){
-                    int index = Array.IndexOf(Templates, template);
-                    int groupIndex = template.Groups.IndexOf(tGroup);
-                    Templates[index].Groups[groupIndex] = group;
-                    return;
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Group Functions
-    //variables
-    KeyValuePair<TemplateItem, TaskGroup>? OpenedGroupForEditing = null;
-
-    //functions
-    private void IncrementGroup(TemplateItem template, TaskGroup group){
-        int index = template.Groups.IndexOf(group);
-        if(index <= 0) return;
-
-        template.Groups.Remove(group);
-        template.Groups.Insert(index - 1, group);
-    }
-
-    private void DecrementGroup(TemplateItem template, TaskGroup group){
-        int index = template.Groups.IndexOf(group);
-        if(index >= template.Groups.Count() - 1) return;
-
-        template.Groups.Remove(group);
-        template.Groups.Insert(index + 1, group);
-    }
-
-    private void RemoveGroup(TemplateItem template, TaskGroup group){
-        template.Groups.Remove(group);
-    }
-
-    private void OpenGroupNameEdit(TemplateItem template, TaskGroup group){
-        OpenedGroupForEditing = new KeyValuePair<TemplateItem, TaskGroup>(template, group);
-    }
-
-    bool IsGroupNameEditMode = false;
-    private void EditGroupSubmit(){
-        // this is triggered the first time rendered, so we use up the first triggered instance to do nothing
-        if(!IsGroupNameEditMode){
-            IsGroupNameEditMode = true;
-            return;
-        }
-
-        IsGroupNameEditMode = false;
-        OpenedGroupForEditing = null;
-    }
-    #endregion
-
-    #region Template Functions
-    TemplateItem? activeTemplate = null;
-
-    private void SetActiveTemplate(TemplateItem template){
-        if(activeTemplate is not null) return; //need to save/clear previously opened template first
-
-        activeTemplate = template;
-    }
-
-    private async Task SaveTemplate(TemplateItem template){
-        if (!IsActiveTemplate(template)) return;
-        if(template == null) return;
-
-        //send values to database to save
-        await templateService.UpdateTemplate(template);
-
-        //remove form from editing
-        activeTemplate = null;
-    }
-
-    private async Task ResetTemplate(TemplateItem template){
-        if (!IsActiveTemplate(template)) return;
-
-        //grab original from service
-        GetTemplates();
-    }
-
-    private void RemoveTemplate(TemplateItem template){
-        int index = Array.IndexOf(Templates, template);
-        if (index < 0) return; //doesn't exist
-
-        var templates = new List<TemplateItem>();
-        for(int i = 0; i < Templates.Length; i++) if (Templates[i] != template) templates.Add(Templates[i]);
-
-        Templates = templates.ToArray();
-    }
-
-        private async Task OnTemplateUpdated(TemplateItem template){
-        foreach(var t in Templates){
-            int index = Array.IndexOf(Templates, template);
-            Templates[index] = template;
-            return;
-                
-            
-        }
-    }
-    #endregion
-
-    //check if template is the actively edited template
-    private bool IsActiveTemplate(TemplateItem template){
-        if (activeTemplate is null) return false;
-        if(template is null) return false;
-        if (activeTemplate != template) return false;
-
-        return true;
-    }
-
-    //submit edited task
-
 }
