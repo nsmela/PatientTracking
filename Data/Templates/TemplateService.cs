@@ -71,9 +71,9 @@
         }
 
         public async Task<List<TemplateItem>> GetAllTemplates() => _templates;
-
+        public async Task<List<TaskGroup>> GetAllGroupTemplates() => _groupTemplates.ToList();
         public async Task<TemplateItem> GetTemplate(int index) => _templates[index];
-
+        public async Task<TaskGroup> GetGroup(int index) => _groupTemplates[index];
         public async Task AddTemplate(TemplateItem template) => _templates.Add(template);
         public async Task UpdateTemplate(TemplateItem template) {
             _templates[template.Id] = template;

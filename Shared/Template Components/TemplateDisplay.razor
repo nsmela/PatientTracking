@@ -1,7 +1,22 @@
 ﻿<MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
     <MudToolBar DisableGutters="true">
-        <MudText Typo="Typo.h4" Class="pl-1">@newTemplate.Label</MudText>
-        <MudSpacer />
+
+        @if (editMode) {
+            if (nameEditMode)
+            {
+                <MudTextField @bind-Value="newTemplate.Label" Placeholder="@newTemplate.Label" Class="pa-2 mb-2 mt-2"
+                    Typo="Typo.h5" Variant="Variant.Filled" Immediate="false" TextChanged=@SubmitTemplateNameEdit />
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick=@SubmitTemplateNameEdit />
+            }else {
+                <MudText Typo="Typo.h4" Class="pl-1">@newTemplate.Label</MudText>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick="(()=> nameEditMode=true)" />
+            }
+        }else {
+            <MudText Typo="Typo.h4" Class="pl-1">@newTemplate.Label</MudText>
+            <MudSpacer />
+        }
         <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
                 TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
             <MudButton Size="Size.Small" Color="Color.Success" StartIcon="@Icons.Material.Filled.PersonAddAlt1">Create Patient</MudButton>
@@ -11,17 +26,23 @@
             <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveTemplate >Remove Template</MudButton>
         </MudMenu>
     </MudToolBar>
+
     <!-- Groups -->
     @foreach (var group in newTemplate.Groups){
         <TemplateGroupItem Editing=@editMode Group=@group PatientTemplate=@newTemplate TemplateChanged=@OnTemplateUpdated />
     }
-
+    <!-- Template Controls -->
     @if (editMode) {
         <MudStack Rows="true" Spacing="1">
             @if(newGroupOpen){
                 <MudPaper Outlined="true" Class="ma-1 pa-1" >
-                    <MudTextField @bind-Value="newGroupLabel" Placeholder="New Group" DisableUnderLine="true" />
-                    <MudButton FullWidth="true" OnClick=@SubmitNewGroup> Add Task </MudButton>
+                    <MudToolBar>
+                        <MudAutocomplete T="string" Label="New Group Name" @bind-Value="newGroupLabel" CoerceText="true" CoerceValue="true"
+                                 ResetValueOnEmptyText="true" SearchFunc="@SearchGroupNames" />
+                        <MudSpacer/>
+                        <MudButton OnClick=@SubmitNewGroup> Add </MudButton>
+                        <MudButton OnClick="(()=> { newGroupOpen = false; newGroupLabel = string.Empty;})"> Cancel </MudButton>
+                    </MudToolBar>
                 </MudPaper>
             }else {
                 <MudButton OnClick=@(()=> newGroupOpen = true)> New Group </MudButton>
@@ -36,18 +57,52 @@
     [Parameter] public TemplateItem PatientTemplate { get; set; }
     [Parameter] public TemplateItem[] Templates { get; set; }
     [Parameter] public EventCallback<TemplateItem> TemplateChanged {get; set;}
+    [Parameter] public TaskGroup[] GroupTemplates { get; set; }
 
     TemplateItem newTemplate = null;
+    string[] groupTemplates = new string[0];
     bool editMode = false;
+    bool nameEditMode = false;
+    bool initalNameEdit = false;
     bool newGroupOpen = false;
     string newGroupLabel = string.Empty;
+    string groupSelected = "Custom";
 
     protected override async Task OnParametersSetAsync() {
         newTemplate = PatientTemplate.Copy();
+
+        var groups = new List<string>();
+        Array.ForEach(GroupTemplates, g => groups.Add(g.Label));
+        groupTemplates = groups.ToArray();
+    }
+
+    async Task<IEnumerable<string>> SearchGroupNames(string value){
+        if (string.IsNullOrEmpty(value)) return groupTemplates;
+
+        return groupTemplates.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
     async Task SubmitNewGroup(){
+        //is the entry invalid?
+        if (string.IsNullOrWhiteSpace(newGroupLabel)) return;
         var group = new TaskGroup { Label = newGroupLabel, Tasks = new() };
+        if(groupTemplates.Contains(newGroupLabel)){
+            int index = -1;
+            for (int i = 0; i < GroupTemplates.Count(); i++) {
+                if (GroupTemplates[i].Label == newGroupLabel) {
+                    index = i;
+                } 
+            }
+
+            if(index >= 0){
+                group = GroupTemplates[index].Copy();
+            }
+        }
+
+        foreach(var g in newTemplate.Groups){
+            if (g.Id == group.Id) return; //already added
+        }
+
         newTemplate.Groups.Add(group);
 
         newGroupOpen = false;
@@ -56,11 +111,29 @@
 
     async Task EditTemplate(){
         editMode = !editMode;
+
+        if (!editMode) ResetTemplate();
     }
 
     async Task ResetTemplate(){
         newTemplate = PatientTemplate.Copy();
+        nameEditMode = false;
+        newGroupOpen = false;
+        newGroupLabel = string.Empty;
         StateHasChanged();
+    }
+
+    async Task SubmitTemplateNameEdit() {
+        //start of text changed triggers this before any edits are made
+        //this boolean prevents closing the text field immediately
+        if(!initalNameEdit){
+            initalNameEdit = true;
+            return;
+        }
+
+        initalNameEdit = false;
+        nameEditMode = false;
+
     }
 
     async Task RemoveTemplate(){

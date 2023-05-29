@@ -18,7 +18,7 @@
         }
         <!-- Template List -->
         @foreach (var template in Templates) {
-            <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged />
+            <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged GroupTemplates="@GroupTemplates"/>
         }   
     </MudStack>
 </MudContainer>
@@ -40,6 +40,7 @@
 
     protected override async Task OnInitializedAsync(){
         GetTemplates();
+        GetGroupTemplates();
     }
 
     private async Task GetTemplates(){
@@ -67,6 +68,23 @@
         });
 
         Templates = templates.ToArray();
+    }
+
+    private async Task GetGroupTemplates(){
+        var result = await templateService.GetAllGroupTemplates();
+        var groups= new List<TaskGroup>();
+
+        result.ForEach(r => {
+            var group = new TaskGroup
+            {
+                Label = r.Label,
+                Id = r.Id,
+                Tasks = r.Tasks
+            };
+            groups.Add(group);
+        });
+
+        GroupTemplates = groups.ToArray();
     }
 
     async Task AddTemplate(){
