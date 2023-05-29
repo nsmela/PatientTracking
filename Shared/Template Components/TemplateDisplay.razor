@@ -95,7 +95,8 @@
     async Task<IEnumerable<string>> SearchGroupNames(string value){
         if (string.IsNullOrEmpty(value)) return groupTemplates;
 
-        return groupTemplates.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var result = groupTemplates.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        return result;
     }
 
     async Task SubmitNewGroup(){
