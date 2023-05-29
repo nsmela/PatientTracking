@@ -1,0 +1,56 @@
+﻿@page "/templates/groups"
+
+<MudContainer Class="pa-1 align-items-baseline">
+    <MudPaper MaxHeight="64px" MaxWidth="660px" Class="pa-2 ma-2">
+        <MudStack Row="true">
+            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newGroupOpen = true)">Add Template </MudButton>
+            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+        </MudStack>
+    </MudPaper>
+    <!-- Existing Groups -->
+    <MudStack Row=@true>
+        <!-- New Group -->
+        @if (newGroupOpen) {
+            <MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")">
+                <MudTextField @bind-Value="newGroupLabel" Placeholder="New Group" DisableUnderLine="true" />
+                <MudButton OnClick="AddGroup">Add Group</MudButton>
+            </MudPaper>
+        }
+        <!-- Template List -->
+        @foreach (var group in GroupTemplates) {
+            <TemplateGroupItem Group="@group" />
+        }
+    </MudStack>
+</MudContainer>
+
+@code {
+    [Inject] PatientService patientService { get; set; }
+    [Inject] TemplateService templateService { get; set; }
+    private TaskGroup[] GroupTemplates;
+
+    int? editedGroupIndex = null;
+    bool newGroupOpen { get; set; } = false;
+    string newGroupLabel { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync(){
+        GetGroupTemplates();
+    }
+
+    private async Task GetGroupTemplates() {
+        var result = await templateService.GetAllGroupTemplates();
+        var groups = new List<TaskGroup>();
+
+        result.ForEach(r => {
+            var group = new TaskGroup(r.Label, r.Tasks, r.Id);
+            groups.Add(group);
+        });
+
+        GroupTemplates = groups.ToArray();
+    }
+
+    async Task AddGroup(){
+        if (!newGroupOpen) return;
+        var group = new TaskGroup(newGroupLabel, new(), null);
+
+    }
+}

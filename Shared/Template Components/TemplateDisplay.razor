@@ -28,9 +28,12 @@
     </MudToolBar>
 
     <!-- Groups -->
-    @foreach (var group in newTemplate.Groups){
-        <TemplateGroupItem Editing=@editMode Group=@group PatientTemplate=@newTemplate TemplateChanged=@OnTemplateUpdated />
+    @for(int i = 0; i < newTemplate.Groups.Count(); i++){
+        var group = newTemplate.Groups[i];
+        bool edit = (editMode && newTemplate.EditableGroupIndex == i);
+        <TemplateGroupItem Edit=@editMode Group=@group PatientTemplate=@newTemplate TemplateChanged=@OnTemplateUpdated />
     }
+
     <!-- Template Controls -->
     @if (editMode) {
         <MudStack Rows="true" Spacing="1">

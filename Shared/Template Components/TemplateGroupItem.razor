@@ -1,13 +1,12 @@
 ﻿<MudPaper Class="ma-2 pb-2" Style="@($"background:{Colors.BlueGrey.Darken1};")">
-    @if(Editing){
-        @if (PatientTemplate.EditableGroupIndex == PatientTemplate.Groups.IndexOf(Group)) {
+    @switch(Editing){
+        case EditMode.View:
             <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
-            <MudTextField @bind-Value="Group.Label" Placeholder="@Group.Label"  Class="pa-2 mb-2 mt-2"
-                        Typo="Typo.h5" Variant="Variant.Filled" Immediate="false" TextChanged=@SubmitGroupNameEdit />
-                <MudSpacer />
-                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick=@SubmitGroupNameEdit  />
+                @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
+                <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
             </MudToolBar>
-        }else{
+            break;
+        case EditMode.LinkedEdit:
             <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
                 @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
                 <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
@@ -24,19 +23,44 @@
                     <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveGroup >Remove Group</MudButton>
                 </MudMenu>
             </MudToolBar>
-        }
-    }else {
-        <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
-            @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
-            <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
-        </MudToolBar>
+            break;
+        case EditMode.UnlinkedEdit:
+
+            if (editLabelOpen) {
+                <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                    <MudTextField @bind-Value="Group.Label" Placeholder="@Group.Label"  Class="pa-2 mb-2 mt-2"
+                        Typo="Typo.h5" Variant="Variant.Filled" Immediate="false" TextChanged=@SubmitGroupNameEdit />
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick=@SubmitGroupNameEdit  />
+            </MudToolBar>
+            } else {
+                <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
+                <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementGroup())" />
+                <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementGroup())"  />
+                <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                    ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                    @if (Group.Id is null){ 
+                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@OpenNameEditing >Rename Section</MudButton> 
+                    }else {
+                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.LinkOff" OnClick="@(()=> Group.Id = null)">Unlink Section</MudButton>
+                    }
+                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveGroup >Remove Group</MudButton>
+                </MudMenu>
+            </MudToolBar>
+            }
+            break;
+        default:
+            break;
     }
 
     <!-- Tasks -->
     @foreach (var task in Group.Tasks) {
         <TemplateTaskItem Group="@Group" Task="@task" GroupChanged="@OnGroupUpdated" Editing="@EditTasks" />
     }
-    @if(Editing){
+    @if(Editing == EditMode.UnlinkedEdit){
         if(newTaskOpen){
         <MudPaper Outlined="true" Class="ma-1 pa-1" >
             <MudTextField @bind-Value="newTaskLabel" Placeholder="New Task" DisableUnderLine="true" />
@@ -53,14 +77,25 @@
 @code {
     [Parameter] public TaskGroup Group { get; set; }
     [Parameter] public TemplateItem PatientTemplate { get; set; }
-    [Parameter] public bool Editing { get; set; } = false;
+    [Parameter] public bool Edit { get; set; } = false;
     [Parameter] public EventCallback<TemplateItem> TemplateChanged { get; set; }
 
-    public bool EditTasks => Group.Id is null && Editing;
+    public enum EditMode {View, LinkedEdit, UnlinkedEdit}; //view is to only view, preview to to edit with the group being linked, edit is to edit unrestricted
+
+    EditMode Editing {
+        get {
+            if (!Edit) return EditMode.View;
+            if(Group.Id is null) return EditMode.UnlinkedEdit;
+
+            return EditMode.LinkedEdit;
+        }
+    }
+
+    public bool EditTasks => Editing == EditMode.UnlinkedEdit;
 
     bool editMode = false;
     bool newTaskOpen = false;
-
+    bool editLabelOpen = false;
     string newTaskLabel = string.Empty;
 
     //functions
@@ -85,11 +120,7 @@
     }
 
     async Task OpenNameEditing(){
-        if (!Editing || !EditTasks) return;
-
-        int index = PatientTemplate.Groups.IndexOf(Group);
-
-        PatientTemplate.EditableGroupIndex = index;
+        editLabelOpen = true;
         editMode = false;
     }
 
@@ -99,6 +130,7 @@
         //all changes are automaticaly bound to Group.Label, so we only need to close the textfield and submit
 
         editMode = false;
+        editLabelOpen = false;
         PatientTemplate.EditableGroupIndex = -1;
         await TemplateChanged.InvokeAsync(PatientTemplate);
     }
@@ -109,8 +141,6 @@
     }
 
     async Task SubmitNewTask(){
-        if (!Editing || !EditTasks) return;
-
         Group.Tasks.Add( new TaskItem { Label = newTaskLabel });
 
         newTaskOpen = false;
@@ -131,4 +161,5 @@
             }
         
     }
+
 }
