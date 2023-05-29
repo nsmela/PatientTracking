@@ -9,6 +9,7 @@
         public string Label { get; set; }
         public List<TaskItem> Tasks { get; set; }
         public int EditableTaskIndex { get; set; } = -1;
+        public TemplateStatus Status { get; set; } = TemplateStatus.Active;
 
         public TaskGroup(string label, List<TaskItem> tasks, int? id) {
             Id = id;
@@ -29,7 +30,7 @@
         public string Label { get; set; }
         public List<TaskGroup> Groups { get; set; }
         public int EditableGroupIndex { get; set; } = -1;
-        public TemplateStatus Status { get; set; } = TemplateStatus.Active;
+        public TemplateStatus Status { get; set; } = TemplateStatus.Active; //used to allow children to delete themselves
         public TemplateItem Copy() {
             var template = new TemplateItem { Label = this.Label, Id= this.Id, EditableGroupIndex = this.EditableGroupIndex, Groups = new List<TaskGroup>() };
             foreach(var group in Groups) {
@@ -43,10 +44,10 @@
 
     public class TemplateService {
         private List<TemplateItem> _templates { get; set; }
-        private TaskGroup[] _groupTemplates { get; set; }
+        private List<TaskGroup> _groupTemplates { get; set; }
 
         public TemplateService() {
-            _groupTemplates = new TaskGroup[]{
+            _groupTemplates = new List<TaskGroup>{
                 new TaskGroup("General Tasks",  new List<TaskItem>{
                     new TaskItem{Label = "Approved by Oncologist", Type=typeof(bool) },
                     new TaskItem{Label = "Approved by Physics", Type=typeof(string)},
@@ -78,12 +79,30 @@
         public async Task<TemplateItem> GetTemplate(int index) => _templates[index];
         public async Task<TaskGroup> GetGroup(int index) => _groupTemplates.FirstOrDefault(x => x.Id == index);
         public async Task AddTemplate(TemplateItem template) => _templates.Add(template);
+        public async Task AddGroup(TaskGroup group) {
+            group.Id = _groupTemplates.Count;
+            _groupTemplates.Add(group);
+        }
         public async Task UpdateTemplate(TemplateItem template) {
             _templates[template.Id] = template;
         }
+        public async Task UpdateGroup(TaskGroup group) {
+            _groupTemplates[(int)group.Id] = group;
+        }
         public async Task RemoveTemplate(int index) {
-            if (index < 0) return;
-            _templates.RemoveAt(index);
+            _templates.RemoveAt((int)index);
+        }
+        public async Task RemoveGroup(int? index) {
+            if (index is null || index < 0) return;
+            foreach (var template in _templates) {
+                foreach (var group in template.Groups) {
+                    if (group.Id == index) {
+                        template.Groups.Remove(group);
+                        break;
+                    }
+                }
+            }
+            _groupTemplates.RemoveAt((int)index);
         }
     }
 }

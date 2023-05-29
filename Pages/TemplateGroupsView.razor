@@ -3,8 +3,10 @@
 <MudContainer Class="pa-1 align-items-baseline">
     <MudPaper MaxHeight="64px" MaxWidth="660px" Class="pa-2 ma-2">
         <MudStack Row="true">
-            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newGroupOpen = true)">Add Template </MudButton>
-            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" 
+                StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newGroupOpen = true)">Add Group </MudButton>
+            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" 
+                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
         </MudStack>
     </MudPaper>
     <!-- Existing Groups -->
@@ -18,7 +20,7 @@
         }
         <!-- Template List -->
         @foreach (var group in GroupTemplates) {
-            <TemplateGroupItem Group="@group" />
+            <TemplateGroupDisplay GroupTemplate="@group" Edit="false" GroupChanged="@OnGroupChanged"/>
         }
     </MudStack>
 </MudContainer>
@@ -51,6 +53,17 @@
     async Task AddGroup(){
         if (!newGroupOpen) return;
         var group = new TaskGroup(newGroupLabel, new(), null);
+        await templateService.AddGroup(group);
+        newGroupLabel = string.Empty;
+        newGroupOpen = false;
+        GetGroupTemplates();
+    }
+
+    async Task OnGroupChanged(TaskGroup group) {
+        if (group.Status == TemplateStatus.Delete) await templateService.RemoveGroup(group.Id);
+        else await templateService.UpdateGroup(group);
+        GetGroupTemplates();
+        StateHasChanged();
 
     }
 }
