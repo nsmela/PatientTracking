@@ -74,6 +74,19 @@
         var groups = new List<string>();
         Array.ForEach(GroupTemplates, g => groups.Add(g.Label));
         groupTemplates = groups.ToArray();
+
+        //if the group has a valid id number
+        //copy the original linked template
+        for(int i = 0; i < newTemplate.Groups.Count(); i++){
+            if (newTemplate.Groups[i].Id > -1) {
+                //get the relevant group
+                //copy that group
+                //add it to the template
+                var template = GroupTemplates.First(x => x.Id == newTemplate.Groups[i].Id);
+                var group = template.Copy();
+                newTemplate.Groups[i] = group;
+            }
+        }
     }
 
     async Task<IEnumerable<string>> SearchGroupNames(string value){
@@ -85,7 +98,7 @@
     async Task SubmitNewGroup(){
         //is the entry invalid?
         if (string.IsNullOrWhiteSpace(newGroupLabel)) return;
-        var group = new TaskGroup { Label = newGroupLabel, Tasks = new() };
+        var group = new TaskGroup(newGroupLabel, new List<TaskItem>(), null);
         if(groupTemplates.Contains(newGroupLabel)){
             int index = -1;
             for (int i = 0; i < GroupTemplates.Count(); i++) {

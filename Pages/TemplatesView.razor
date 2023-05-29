@@ -56,10 +56,7 @@
 
             var groups = new List<TaskGroup>();
             r.Groups.ForEach(g => {
-                var group = new TaskGroup {
-                        Label = g.Label,
-                        Tasks = new List<TaskItem>()
-                    };
+                var group = new TaskGroup(g.Label, new List<TaskItem>(), g.Id);
                 g.Tasks.ForEach(t => group.Tasks.Add(new TaskItem { Label = t.Label, Type = t.Type }));
                 groups.Add(group);
             });
@@ -75,12 +72,7 @@
         var groups= new List<TaskGroup>();
 
         result.ForEach(r => {
-            var group = new TaskGroup
-            {
-                Label = r.Label,
-                Id = r.Id,
-                Tasks = r.Tasks
-            };
+            var group = new TaskGroup(r.Label, r.Tasks, r.Id);
             groups.Add(group);
         });
 
