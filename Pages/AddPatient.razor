@@ -6,35 +6,31 @@
 <h3>Add Patient</h3>
 <MudGrid>
         <MudItem xs="12" sm="7" >
-        <MudPaper Class="pa-4">
+        <!-- Patient Info -->
+        <MudPaper Class="pa-4 ma-2">
             <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ReadOnly="false">
                 <MudTextField @bind-Value="@id" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" />
                 <MudTextField @bind-Value="@lastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
                 <MudTextField @bind-Value="@firstName" Label="First Name" />
                 <MudDatePicker @bind-PickerMonth="date" Label="Start Date" @bind-Date="date" />
-
-                @foreach(var group in groups){
-                    <MudPaper xs="12" sm="4">
-                        <MudTextField @bind-Value="group.Label" Label="Group Name" Required="true" RequiredError="A group is missing a name!" Margin="Margin.Dense"/>
-                        @foreach(var task in group.Tasks){
-                            <MudTextField @bind-Value="task.Label" HelperText="@task.Type" />
-                        }
-                        <div>
-                            <MudSelect @bind-Value="group.SelectedTask" Label="Task Type" AnchorOrigin="Origin.BottomCenter">
-                                <MudSelectItem Value="@("Checkbox")" />
-                                <MudSelectItem Value="@("Text")" />
-                            </MudSelect>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(()=> AddTask(group))">
-                                Add Task
-                            </MudButton>
-                        </div>
-                    </MudPaper>
-                }
-
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => AddGroup())" >Add Group</MudButton>
-
             </MudForm>   
         </MudPaper>
+
+        <!-- Template -->
+        <MudPaper Class="ma-2 pa-2">
+            <MudToolBar>
+                <MudAutocomplete T="string" Label="Patient Template" @bind-Value="patientTemplateLabel" CoerceText="true" CoerceValue="true"
+                    SearchFunc="@SearchTemplates"/>
+                <MudSpacer />
+                <MudButton > Add </MudButton>
+            </MudToolBar>
+        </MudPaper>
+
+        <!-- Template listing -->
+        <MudPaper Class="ma-2 pa-2">
+            <TemplateDisplay PatientTemplate="@patientTemplate" />
+        </MudPaper>
+        <!-- Submit Buttons-->
         <MudPaper Class="pa-4 mt-4">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=> Submit())">Submit</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="@(()=> Reset())" Class="mx-2">Clear Form</MudButton>
@@ -52,36 +48,66 @@
 </MudGrid>
 
 @code {
-    bool success;
+    [Inject] private TemplateService _templateService { get; set; }
+    TemplateItem[] _patientTemplates;
+    TaskGroup[] _groupTemplates;
+
+    List<string> _searchPatientTemplates, _searchGroupTemplates;
+
+    string patientTemplateLabel = string.Empty;
+    TemplateItem? patientTemplate { get; set; }
+
+
+    bool success { get; set; }
     string[] errors = { };
-    MudForm form;
+    MudForm? form;
     string id;
     string lastName, firstName;
     DateTime? date;
     List<TaskGroup> groups = new();
 
-    public class TaskGroup {
-        public string Label { get; set; }
-        public List<PatientTask> Tasks { get; set; } = new List<PatientTask>();
-        public string SelectedTask { get; set; }
+    protected override async Task OnInitializedAsync() {
+        var templates = (await _templateService.GetAllTemplates() as List<TemplateItem>);
+        if(templates is not null) _patientTemplates = templates.ToArray();
+        var groups = await _templateService.GetAllGroupTemplates();
+        if (groups is not null) _groupTemplates = groups.ToArray();
+
+        _searchPatientTemplates = new();
+        foreach (var template in _patientTemplates){
+            _searchPatientTemplates.Add(template.Label);
+        }
+
+        _searchGroupTemplates = new();
+        foreach(var group in _groupTemplates){
+            _searchGroupTemplates.Add(group.Label);
+        }
     }
 
-    public class PatientTask {
-        public string Label {get; set; }
-        public string Type {get; set; }
+
+    async Task<IEnumerable<string>> SearchTemplates(string value) {
+        if (string.IsNullOrEmpty(value)) return _searchPatientTemplates;
+
+        return _searchPatientTemplates.Where(t => t.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    async Task<IEnumerable<string>> SearchGroups(string value) {
+        if (string.IsNullOrEmpty(value)) return _searchGroupTemplates;
+
+        return _searchGroupTemplates.Where(t => t.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task AddPatientTemplate(){
+        var result = Array.FindIndex(_patientTemplates, t => t.Label == patientTemplateLabel);
+        if (result == -1) return; //can't find the template
+
+        patientTemplateLabel = string.Empty;
+        patientTemplate = _patientTemplates[result];
     }
 
     private async Task AddGroup(){
-        groups.Add(new TaskGroup { Label = "New Group!" });
-        StateHasChanged();
     }
 
     private async Task AddTask(TaskGroup group){
-        if (group.SelectedTask is null || group.SelectedTask == string.Empty) return;
-
-        group.Tasks.Add(new PatientTask { Label = "New Task", Type = group.SelectedTask });
-
-        StateHasChanged();
     }
 
     private async Task Submit(){
