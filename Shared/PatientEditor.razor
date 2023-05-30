@@ -33,6 +33,9 @@
                                 <MudMenu Icon="@TypeToIcon(task.Type)" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Outlined.CheckBox" OnClick=@(()=> {task.Type = "Checkbox"; task.Value = null;})></MudButton>
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.TextSnippet" OnClick=@(()=> {task.Type = "Text"; task.Value=null;})></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> {task.Type = "Date"; task.Value=null;}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> {task.Type = "List"; task.Value=null;}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> {task.Type = "Number"; task.Value=null;}) />
                                 </MudMenu>
                                 <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                                 <MudSpacer />
@@ -121,6 +124,9 @@
     private string TypeToIcon(string type) {
         if (type == "Checkbox") return Icons.Material.Outlined.CheckBox;
         if (type == "Text") return Icons.Material.Filled.TextSnippet;
+        if (type == "Date") return Icons.Material.Filled.CalendarMonth;
+        if (type == "List") return Icons.Material.Filled.List;
+        if (type == "Number") return Icons.Material.Filled.Numbers;
         return Icons.Material.Filled.QuestionMark;
     }
 
@@ -144,10 +150,18 @@
                 if (t.GetType() == typeof(PatientTaskBool)){
                     var task = t as PatientTaskBool;
                     group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Checkbox", Value = task.Checked });
-                }
-                else if (t.GetType() == typeof(PatientTaskText)){
+                } else if (t.GetType() == typeof(PatientTaskText)){
                     var task = t as PatientTaskText;
                     group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Text", Value = task.Text });
+                } else if (t.GetType() == typeof(PatientTaskDate)) {
+                    var task = t as PatientTaskDate;
+                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Date", Value = task.Date });
+                } else if (t.GetType() == typeof(PatientTaskList)) {
+                    var task = t as PatientTaskList;
+                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "List", Value = task.Values });
+                } else if (t.GetType() == typeof(PatientTaskNumber)) {
+                    var task = t as PatientTaskNumber;
+                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Number", Value = task.Value });
                 }
             });
             groups.Add(group);
@@ -240,6 +254,21 @@
                 else if (t.Type == "Text") {
                     var task = new PatientTaskText { Label = t.Label };
                     task.Text = t.Value is null ? string.Empty : (string)t.Value;
+                    tasks.Add(task);
+                }
+                else if (t.Type == "Date") {
+                    var task = new PatientTaskDate { Label = t.Label };
+                    task.SetValue(t.Value);
+                    tasks.Add(task);
+                }
+                else if (t.Type == "List") {
+                    var task = new PatientTaskList { Label = t.Label, Values = new() };
+                    task.SetValue(t.Value);
+                    tasks.Add(task);
+                }
+                else if (t.Type == "Number") {
+                    var task = new PatientTaskNumber { Label = t.Label };
+                    task.SetValue(t.Value);
                     tasks.Add(task);
                 }
             });
