@@ -219,6 +219,9 @@
             foreach(var task in group.Tasks){
                 if (task.Type == typeof(bool)) patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label });
                 if (task.Type == typeof(string)) patientGroup.Tasks.Add(new PatientTaskText{ Label = task.Label });
+                if (task.Type == typeof(DateTime)) patientGroup.Tasks.Add(new PatientTaskDate { Label = task.Label });
+                if (task.Type == typeof(List<string>)) patientGroup.Tasks.Add(new PatientTaskList { Label = task.Label, Values = new() });
+                if (task.Type == typeof(double)) patientGroup.Tasks.Add(new PatientTaskNumber { Label = task.Label, Value = 0.0f });
             }
             patient.TaskGroups.Add(patientGroup);
         }
