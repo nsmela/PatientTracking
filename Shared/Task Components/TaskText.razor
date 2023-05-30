@@ -1,19 +1,18 @@
-﻿<MudToolBar >
-    @switch(Editing){
-        <!-- View Only: cannot change anything -->
-        default:
-            <MudTextField T="string" @bind-Text="TaskItem.Text" Variant="Variant.Text" FullWidth="true" Class="object-right"
-                  Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ReadOnly="true" />
-        break;
-        <!-- Data Entry Only: can change the value only -->
-        case EditMode.DataEntry:
-            <MudTextField T="string" @bind-Text="TaskItem.Text" Variant="Variant.Text" FullWidth="true" Class="object-right"
-                  Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ValueChanged="@OnValueChanged" />
-        break;
-    }
-    <!-- Edit: can edit value and settings -->
-    <!-- Maybe use a generic component? -->
-</MudToolBar>
+﻿@switch(Editing){
+    <!-- View Only: cannot change anything -->
+    default:
+        <MudTextField T="string" @bind-Text="TaskItem.Text" Variant="Variant.Text" FullWidth="true" 
+                Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ReadOnly="true" />
+    break;
+    <!-- Data Entry Only: can change the value only -->
+    case EditMode.DataEntry:
+        <MudTextField T="string" @bind-Text="TaskItem.Text" Variant="Variant.Text" FullWidth="true"
+                Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ValueChanged="@OnValueChanged" />
+    break;
+}
+<!-- Edit: can edit value and settings -->
+<!-- Maybe use a generic component? -->
+
 
 @code {
     [Parameter] public PatientTaskText TaskItem { get; set; }
