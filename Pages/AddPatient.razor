@@ -22,14 +22,15 @@
             <TitleContent>
                 <div class="d-flex ma-n4"  >
                     <MudButtonGroup Class="ma-1" Variant="Variant.Outlined">
-                        <MudText Class="pr-2">Template: </MudText>
-                        <MudButton>@_templateName</MudButton>
+                        <MudText Class="pr-2">Add Template: </MudText>
+                        <MudButton OnClick="()=> AddTemplateGroups(_templateName)">@_templateName</MudButton>
                         <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown">
                             <MudMenuItem OnClick="() => SetTemplate()">No Template</MudMenuItem>
                                 @foreach (var template in _patientTemplates) {
                                     <MudMenuItem OnClick="() => SetTemplate(template.Label)">@template.Label</MudMenuItem>
                                 }
                         </MudMenu>
+                            <MudButton OnClick="()=> AddTemplateGroups(_templateName)">Add Template</MudButton>
                     </MudButtonGroup>
                 </div>
             </TitleContent>
@@ -38,7 +39,7 @@
                         var template = Array.Find(_patientTemplates, t => t.Label == _templateName);
                         if (template is not null){
                             @foreach (var group in template.Groups){
-                                <TemplateGroupItem Group="@group"/>
+                                <TemplateGroupItem Group="@group" Edit="true"/>
                             }
                         }
                     }
@@ -46,9 +47,38 @@
             </MudExpansionPanel>
         </MudPaper>
 
-        <!-- Template listing -->
-        <MudPaper Class="ma-2 pa-2">
-            
+        <!-- Groups listing -->
+        <MudPaper Class="ma-2">
+            <!-- Group Importer -->
+            <MudPaper Outlined="true" Class="pa-2">
+                <MudToolBar>
+                    <MudAutocomplete T="string" Label="New Group Name" @bind-Value="newGroupLabel" CoerceText="true" CoerceValue="true"
+                                    ResetValueOnEmptyText="true" SearchFunc="@SearchGroups" />
+                    <MudSpacer />
+                    <MudButton OnClick=@AddGroup> Add </MudButton>
+                </MudToolBar>
+            </MudPaper>
+            <!-- Group Listing -->
+            <MudPaper Class="pa-2">
+                @foreach(var group in groups){
+                    <MudToolBar Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                        <MudText Typo="Typo.h5" >@group.Label</MudText>
+                        <MudSpacer />
+                        <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementGroup(group))" />
+                        <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementGroup(group))"  />
+                        <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                            ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                            <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick="() => RemoveGroup(group)" >Remove Group</MudButton>
+                        </MudMenu>
+                    </MudToolBar>
+                    @foreach (var task in group.Tasks) {
+                        <TemplateTaskItem Group="@group" Task="@task" GroupChanged="@OnGroupUpdated" Editing="true" />
+                    }
+                    <MudPaper Outlined="true" Class="ma-1 pa-1">
+                        <MudButton FullWidth="true" OnClick="() => AddTask(group)"> Add Task </MudButton>
+                    </MudPaper>
+                }
+            </MudPaper>
         </MudPaper>
         <!-- Submit Buttons-->
         <MudPaper Class="pa-4 mt-4">
@@ -61,7 +91,7 @@
         <MudPaper Class="pa-4 mud-height-full">
             <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText>
             @foreach (var error in errors) {
-                        <MudText Color="@Color.Error">@error</MudText>
+                <MudText Color="@Color.Error">@error</MudText>
             }
         </MudPaper>
     </MudItem>
@@ -77,6 +107,8 @@
     string patientTemplateLabel = string.Empty;
     TemplateItem? patientTemplate { get; set; }
     private string _templateName = "No Template";
+
+    private string newGroupLabel = string.Empty;
 
     bool success { get; set; }
     string[] errors = { };
@@ -124,10 +156,52 @@
         patientTemplate = _patientTemplates[result];
     }
 
+    private async Task AddTemplateGroups(string templateName){
+        var template = Array.Find(_patientTemplates, t => t.Label == templateName);
+        if (template is null) return;
+
+        foreach(var group in template.Groups) {
+            if (!groups.TrueForAll(g => g.Label != group.Label)) continue; //already added
+            groups.Add(group);
+        }
+        _templateName = string.Empty;
+    }
+
     private async Task AddGroup(){
+        //is this a custom group or importing a group template?
+        if (string.IsNullOrEmpty(newGroupLabel)) return;
+        if (!groups.TrueForAll(g => g.Label != newGroupLabel)) return;
+
+        var group = Array.Find(_groupTemplates, g => g.Label == newGroupLabel);
+        if (group is null) group = new TaskGroup(newGroupLabel, new(), null);
+
+        groups.Add(group);
+        newGroupLabel = string.Empty;
+    }
+
+    private async Task IncrementGroup(TaskGroup group){
+        int index = groups.IndexOf(group);
+        if (index < 1) return;
+
+        groups.Remove(group);
+        groups.Insert(index - 1, group);
+    }
+
+    private async Task DecrementGroup(TaskGroup group){
+        int index = groups.IndexOf(group);
+        if (index >= groups.Count() - 1) return;
+
+        groups.Remove(group);
+        groups.Insert(index + 1, group);
+    }
+
+    private async Task RemoveGroup(TaskGroup group){
+        groups.Remove(group);
     }
 
     private async Task AddTask(TaskGroup group){
+        var task = new TaskItem { Label = "New Task", Type = (typeof(bool)) };
+        group.Tasks.Add(task);
     }
 
     private async Task Submit(){
@@ -143,11 +217,10 @@
         foreach(var group in groups){
             var patientGroup = new PatientTaskGroup { Label = group.Label, Tasks = new() };
             foreach(var task in group.Tasks){
-                if (task.Type == "Checkbox") patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label });
-                if (task.Type == "Text") patientGroup.Tasks.Add(new PatientTaskText{ Label = task.Label });
+                if (task.Type == typeof(bool)) patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label });
+                if (task.Type == typeof(string)) patientGroup.Tasks.Add(new PatientTaskText{ Label = task.Label });
             }
             patient.TaskGroups.Add(patientGroup);
-
         }
         PatientService.AddPatient(patient);
         NavigationManager.NavigateTo("patients");
@@ -163,4 +236,12 @@
         if (templateName == "") _templateName = "No Template";
         else _templateName = templateName;
     }
+
+    private async Task OnGroupUpdated(TaskGroup group) {
+        int index = groups.FindIndex(g => g.Label == group.Label);
+        if(index < 0) return;
+
+        groups[index] = group;
+    }
+
 }
