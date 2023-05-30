@@ -2,8 +2,8 @@
 
 namespace PatientTracking.Data.Patient {
     public class PatientTaskText : IPatientTask {
-        public static object Type => typeof(string);
-        public static string Icon => Icons.Material.Filled.TextSnippet;
+        public object Type => typeof(string);
+        public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
         public string Text { get; set; }
 

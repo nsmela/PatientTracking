@@ -6,7 +6,7 @@
 @if(patients == null){
     <p><em>Loading patients... </em></p>
 }else {
-    <MudStack Row="true" Class="pa-2">
+    <MudStack Row="true" Class="pa-2 overflow-x-scroll">
         @foreach(var patient in patients) {
             <PatientOverview Patient=@patient />
         }

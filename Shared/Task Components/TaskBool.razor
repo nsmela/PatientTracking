@@ -1,0 +1,31 @@
+﻿<MudToolBar>
+    @switch (Editing) {
+        <!-- View Only: cannot change anything -->
+        default:
+            <MudCheckBox Checked="@TaskItem.Checked"  ReadOnly="true"
+                 Variant="Variant.Text"
+                 Label="@TaskItem.Label" LabelPosition="LabelPosition.Start"
+                 Dense="true" Size="Size.Small" />
+            break;
+        <!-- Data Entry Only: can change the value only -->
+        case EditMode.DataEntry:
+            <MudCheckBox T="bool" CheckedChanged="@OnValueChanged"
+                 Variant="Variant.Text"
+                 Label="@TaskItem.Label" LabelPosition="LabelPosition.Start"
+                 Dense="true" Size="Size.Small" />
+            break;
+    }
+    <!-- Edit: can edit value and settings -->
+    <!-- Maybe use a generic component? -->
+</MudToolBar>
+
+@code {
+    [Parameter] public PatientTaskBool TaskItem { get; set; }
+    [Parameter] public EditMode Editing { get; set; }
+    [Parameter] public EventCallback<PatientTaskBool> GroupChanged { get; set; }
+
+    async Task OnValueChanged(bool value) {
+        TaskItem.Checked = value;
+        await GroupChanged.InvokeAsync(TaskItem);
+    }
+}

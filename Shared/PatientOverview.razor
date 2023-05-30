@@ -22,34 +22,17 @@ else{
                         <MudText><b>PID:</b> @Id</MudText>
                     </MudPaper>
                 </MudItem>
-                          @foreach (var group in Patient.TaskGroups) {
-                            <MudItem xs="12">
-                                <MudPaper Elevation="2" Class="pa-2">
-                                    <MudText Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
-                            
-                                    @foreach (var result in group.Tasks) {
-                                        if (result.GetType() == typeof(PatientTaskBool)) {
-                                            var task = result as PatientTaskBool;
-                                            <MudCheckBox T="bool"
-                                         LabelPosition="LabelPosition.Start"
-                                         Label="@task.Label"
-                                         Checked="@task.Checked"
-                                         CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
-                                        }
-                                        else if (result.GetType() == typeof(PatientTaskText)) {
-                                            var task = result as PatientTaskText;
-                                            <MudTextField T="string"
-                                          Label="@task.Label"
-                                          Variant="Variant.Outlined"
-                                          Margin="Margin.Dense"
-                                          TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
-                                          Text="@task.Text" />
-                                        }
-                                    }
+                @foreach (var group in Patient.TaskGroups) {
+                    <MudContainer Class="d-flex flex-column flex-grow-1 align-end">
+                        <MudPaper Elevation="2" Class="pa-2">
+                            <MudText Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
 
-                                </MudPaper>
-                            </MudItem>
-                        }
+                                    @foreach (var result in group.Tasks) {
+                                        <PatientTask TaskItem="@result"/>
+                                    }
+                        </MudPaper>
+                    </MudContainer>
+                }
             </MudGrid>
         </MudContainer>
     </MudCard>

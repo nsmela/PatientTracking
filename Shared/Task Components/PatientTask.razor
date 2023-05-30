@@ -1,0 +1,6 @@
+﻿@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" />}
+else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" /> }
+@code {
+    [Parameter] public IPatientTask TaskItem { get; set; }
+    [Parameter] public EditMode Edit { get; set; } = EditMode.View;
+}
