@@ -31,11 +31,11 @@
                             @if (group.EditTaskIndex >= 0 && group.Tasks.IndexOf(task) == group.EditTaskIndex) {
 
                                 <MudMenu Icon="@TypeToIcon(task.Type)" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
-                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Outlined.CheckBox" OnClick=@(()=> {task.Type = "Checkbox"; task.Value = null;})></MudButton>
-                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.TextSnippet" OnClick=@(()=> {task.Type = "Text"; task.Value=null;})></MudButton>
-                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> {task.Type = "Date"; task.Value=null;}) />
-                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> {task.Type = "List"; task.Value=null;}) />
-                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> {task.Type = "Number"; task.Value=null;}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Outlined.CheckBox" OnClick=@(()=> {task.Type = "Checkbox"; task.Value = false;})></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.TextSnippet" OnClick=@(()=> {task.Type = "Text"; task.Value = string.Empty;})></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> {task.Type = "Date"; task.Value = DateTime.Today;}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> {task.Type = "List"; task.Value = new List<string>();}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> {task.Type = "Number"; task.Value=0.0f;}) />
                                 </MudMenu>
                                 <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                                 <MudSpacer />
@@ -63,6 +63,9 @@
                                 <MudMenu Icon="@TypeToIcon(group.NewTaskType)" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Outlined.CheckBox" OnClick=@(()=> group.NewTaskType = "Checkbox")></MudButton>
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.TextSnippet" OnClick=@(()=> group.NewTaskType = "Text")></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> group.NewTaskType = "Date")></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> group.NewTaskType = "List")></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> group.NewTaskType = "Number")></MudButton>
                                 </MudMenu>
                                 <MudTextField @bind-Value="group.NewTaskName" Placeholder="New Task" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                             </MudToolBar>
@@ -158,7 +161,7 @@
                     group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Date", Value = task.Date });
                 } else if (t.GetType() == typeof(PatientTaskList)) {
                     var task = t as PatientTaskList;
-                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "List", Value = task.Values });
+                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "List", Value = task.Options });
                 } else if (t.GetType() == typeof(PatientTaskNumber)) {
                     var task = t as PatientTaskNumber;
                     group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Number", Value = task.Value });
@@ -257,12 +260,12 @@
                     tasks.Add(task);
                 }
                 else if (t.Type == "Date") {
-                    var task = new PatientTaskDate { Label = t.Label };
+                    var task = new PatientTaskDate { Label = t.Label, Date = DateTime.Today };
                     task.SetValue(t.Value);
                     tasks.Add(task);
                 }
                 else if (t.Type == "List") {
-                    var task = new PatientTaskList { Label = t.Label, Values = new() };
+                    var task = new PatientTaskList { Label = t.Label, Options = new List<string> { "option 1", "option2" }, SelectedOption = 0 };
                     task.SetValue(t.Value);
                     tasks.Add(task);
                 }

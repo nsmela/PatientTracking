@@ -36,7 +36,7 @@
                                             LabelPosition="LabelPosition.Start"
                                             Label="@task.Label"
                                             Checked="@task.Checked"
-                                            CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)" />
+                                            CheckedChanged="(value) => UpdatePatientTask(group.Label, task.Label, (bool)value)" />
                                         }
                                         else if (result.GetType() == typeof(PatientTaskText)) {
                                             var task = result as PatientTaskText;
@@ -44,8 +44,44 @@
                                             Label="@task.Label"
                                             Variant="Variant.Outlined"
                                             Margin="Margin.Dense"
-                                            TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, value)"
+                                            TextChanged="(value) => UpdatePatientTask(group.Label, task.Label, (string)value)"
                                             Text="@task.Text" />
+                                        }
+                                        else if (result.GetType() == typeof(PatientTaskDate)) {
+                                            var task = result as PatientTaskDate;
+                                            <MudDatePicker T="DateTime"
+                                              Label="@task.Label"
+                                              Variant="Variant.Outlined"
+                                              Margin="Margin.Dense"
+                                              DateChanged="(value) => UpdatePatientTask(group.Label, task.Label, (DateTime)value)"
+                                              Date="@task.Date" />
+                                        }
+                                        else if (result.GetType() == typeof(PatientTaskNumber)) {
+                                            var task = result as PatientTaskNumber;
+                                            <MudNumericField T="double" 
+                                               HideSpinButtons="true"
+                                               Format="F4"
+                                               Label="@task.Label"
+                                               Variant="Variant.Outlined"
+                                               Margin="Margin.Dense"
+                                               ValueChanged="(value) => UpdatePatientTask(group.Label, task.Label, (double)value)"
+                                               Value="@task.Value" />
+                                        }
+                                        else if (result.GetType() == typeof(PatientTaskList)) {
+                                            var task = result as PatientTaskList;
+                                            <MudToolBar Dense="true">
+                                                <MudText>@task.Label</MudText>
+                                                <MudSpacer />
+                                                <MudSelect T="int"
+                                                   Variant="Variant.Outlined"
+                                                   Margin="Margin.Dense" Dense="true"
+                                                   ValueChanged="(value) => UpdatePatientTask(group.Label, task.Label, (int)value)"
+                                                   Value="@task.SelectedOption">
+                                                    @foreach (var option in task.Options) {
+                                                        <MudSelectItem Value="@(task.Options.IndexOf(option))">@option</MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            </MudToolBar>
                                         }
                                     }
                                 </MudPaper>
