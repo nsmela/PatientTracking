@@ -9,26 +9,46 @@
         <!-- Patient Info -->
         <MudPaper Class="pa-4 ma-2">
             <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ReadOnly="false">
-                <MudTextField @bind-Value="@id" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" />
-                <MudTextField @bind-Value="@lastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
-                <MudTextField @bind-Value="@firstName" Label="First Name" />
+                <MudTextField @bind-Value="id" Label="Patient ID" Required="true" RequiredError="Patient ID is required!" />
+                <MudTextField @bind-Value="lastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
+                <MudTextField @bind-Value="firstName" Label="First Name" />
                 <MudDatePicker @bind-PickerMonth="date" Label="Start Date" @bind-Date="date" />
             </MudForm>   
         </MudPaper>
 
-        <!-- Template -->
+        <!-- Template Selection -->
         <MudPaper Class="ma-2 pa-2">
-            <MudToolBar>
-                <MudAutocomplete T="string" Label="Patient Template" @bind-Value="patientTemplateLabel" CoerceText="true" CoerceValue="true"
-                    SearchFunc="@SearchTemplates"/>
-                <MudSpacer />
-                <MudButton > Add </MudButton>
-            </MudToolBar>
+            <MudExpansionPanel DisableBorders="false" Dense="true">
+            <TitleContent>
+                <div class="d-flex ma-n4"  >
+                    <MudButtonGroup Class="ma-1" Variant="Variant.Outlined">
+                        <MudText Class="pr-2">Template: </MudText>
+                        <MudButton>@_templateName</MudButton>
+                        <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown">
+                            <MudMenuItem OnClick="() => SetTemplate()">No Template</MudMenuItem>
+                                @foreach (var template in _patientTemplates) {
+                                    <MudMenuItem OnClick="() => SetTemplate(template.Label)">@template.Label</MudMenuItem>
+                                }
+                        </MudMenu>
+                    </MudButtonGroup>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                    @if(_templateName != ""){
+                        var template = Array.Find(_patientTemplates, t => t.Label == _templateName);
+                        if (template is not null){
+                            @foreach (var group in template.Groups){
+                                <TemplateGroupItem Group="@group"/>
+                            }
+                        }
+                    }
+            </ChildContent>
+            </MudExpansionPanel>
         </MudPaper>
 
         <!-- Template listing -->
         <MudPaper Class="ma-2 pa-2">
-            <TemplateDisplay PatientTemplate="@patientTemplate" />
+            
         </MudPaper>
         <!-- Submit Buttons-->
         <MudPaper Class="pa-4 mt-4">
@@ -56,7 +76,7 @@
 
     string patientTemplateLabel = string.Empty;
     TemplateItem? patientTemplate { get; set; }
-
+    private string _templateName = "No Template";
 
     bool success { get; set; }
     string[] errors = { };
@@ -137,5 +157,10 @@
         groups.Clear();
         form.ResetAsync();
 
+    }
+
+    private async Task SetTemplate(string templateName = ""){
+        if (templateName == "") _templateName = "No Template";
+        else _templateName = templateName;
     }
 }

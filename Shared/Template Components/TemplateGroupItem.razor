@@ -27,29 +27,29 @@
         case EditMode.UnlinkedEdit:
 
             if (editLabelOpen) {
-                <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                <MudToolBar  Style="@($"background:{Colors.BlueGrey.Darken2};")">
                     <MudTextField @bind-Value="Group.Label" Placeholder="@Group.Label"  Class="pa-2 mb-2 mt-2"
                         Typo="Typo.h5" Variant="Variant.Filled" Immediate="false" TextChanged=@SubmitGroupNameEdit />
                 <MudSpacer />
                 <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small" OnClick=@SubmitGroupNameEdit  />
             </MudToolBar>
             } else {
-                <MudToolBar DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken2};")">
-                @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
-                <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
-                <MudSpacer />
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementGroup())" />
-                <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementGroup())"  />
-                <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
-                    ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
-                    @if (Group.Id is null){ 
-                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@OpenNameEditing >Rename Section</MudButton> 
-                    }else {
-                        <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.LinkOff" OnClick="@(()=> Group.Id = null)">Unlink Section</MudButton>
-                    }
-                    <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveGroup >Remove Group</MudButton>
-                </MudMenu>
-            </MudToolBar>
+                <MudToolBar Style="@($"background:{Colors.BlueGrey.Darken2};")">
+                    @if (Group.Id is not null) { <MudIcon Icon="@Icons.Material.Filled.Link" /> }
+                    <MudText Typo="Typo.h5" Class="pl-2">@Group.Label</MudText>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementGroup())" />
+                    <MudIconButton Icon="@Icons.Material.Sharp.KeyboardArrowDown" Size="Size.Small" OnClick="(() => DecrementGroup())"  />
+                    <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                        ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                        @if (Group.Id is null){ 
+                            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit" OnClick=@OpenNameEditing >Rename Section</MudButton> 
+                        }else {
+                            <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.LinkOff" OnClick="@(()=> Group.Id = null)">Unlink Section</MudButton>
+                        }
+                        <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Filled.RemoveCircle" OnClick=@RemoveGroup >Remove Group</MudButton>
+                    </MudMenu>
+                </MudToolBar>
             }
             break;
         default:
