@@ -5,38 +5,33 @@
     <p><em>Loading patient...</em></p>
 } 
 else{
-    <MudCard Class="pb-4 mud-theme-primary rounded-t-lg">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">@Date</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" OnClick="(()=> EditPatient())"/>
-            </CardHeaderActions>
-        </MudCardHeader>
-        <MudContainer Class="pt-3" MaxWidth="MaxWidth.Large">
-            <MudGrid xs="12">
-                <MudItem xs="12" Elevation="0">
-                    <MudPaper Elevation="2" Class="pa-2 mt-n8 mud-theme-secondary">
-                        <MudText><b>Name:</b> @Name</MudText>
-                        <MudText><b>PID:</b> @Id</MudText>
-                    </MudPaper>
-                </MudItem>
-                @foreach (var group in Patient.TaskGroups) {
-
-                    <MudPaper Width="100%" Square="true">
-                        <MudContainer Class="ma-0 pa-0 mud-theme-secondary">
-                            <MudText Class="pl-2" Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
-                        </MudContainer>
-                        @foreach (var result in group.Tasks) {
-                            <PatientTask TaskItem="@result"/>
-                        }
-                    </MudPaper>
-
-                }
-            </MudGrid>
+    <MudPaper Class="pa-1 mud-theme-primary rounded-t-lg" MaxWidth="MaxWidth.Medium">
+        <MudContainer Class="d-flex flex-row flex-grow-1 mud-theme-warning justify-start" Dense="true">
+            <MudText Class="mud-theme-primary flex-grow-1">@Date</MudText>
+            <MudIconButton Class="mud-theme-primary flex-none" Icon="@Icons.Material.Filled.Settings" OnClick="@EditPatient" Size="Size.Small" />
         </MudContainer>
-    </MudCard>
+        <MudStack Class="ma-1">
+            <MudPaper Elevation="2" Class="pa-2 mud-theme-secondary">
+                <MudText><b>Name:</b> @Name</MudText>
+                <MudText><b>PID:</b> @Id</MudText>
+            </MudPaper>
+
+            @foreach (var group in Patient.TaskGroups) {
+                <MudPaper Width="100%" Square="true" Class="pb-2">
+                    <MudContainer Class="mud-theme-secondary">
+                        <MudText Class="pl-n3" Align="Align.Left" Typo="Typo.h6">@group.Label</MudText>
+                    </MudContainer>
+                    @foreach (var result in group.Tasks) {
+                        <PatientTask TaskItem="@result" />
+                    }
+                </MudPaper>
+            }
+        </MudStack>
+
+
+
+
+    </MudPaper>
 }
 
 @code {

@@ -2,10 +2,13 @@
     @switch (Editing) {
         <!-- View Only: cannot change anything -->
         default:
-            <MudCheckBox Checked="@TaskItem.Checked"  ReadOnly="true"
-                 Variant="Variant.Text"
-                 Label="@TaskItem.Label" LabelPosition="LabelPosition.Start"
-                 Dense="true" Size="Size.Small" />
+            <MudContainer Class="d-flex flex-row-reverse flex-grow-1 mud-theme-primary object-fill">
+                <MudCheckBox Checked="@TaskItem.Checked" ReadOnly="true"
+                    Variant="Variant.Text"
+                    Label="@TaskItem.Label" LabelPosition="LabelPosition.Start"
+                    Dense="true" Size="Size.Small"
+                    Class="flex-grow-1 mr-n6" />
+            </MudContainer>
             break;
         <!-- Data Entry Only: can change the value only -->
         case EditMode.DataEntry:
