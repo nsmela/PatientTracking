@@ -1,24 +1,13 @@
-﻿@{
-    <!-- Icons -->
-    var icon = Icons.Material.Filled.QuestionMark;
-    if (Task.Type == typeof(bool)) icon = Icons.Material.Filled.CheckBox;
-    if (Task.Type == typeof(string)) icon = Icons.Material.Filled.TextSnippet;
-    if (Task.Type == typeof(List<string>)) icon = Icons.Material.Filled.List;
-    if (Task.Type == typeof(DateTime)) icon = Icons.Material.Filled.CalendarMonth;
-    if (Task.Type == typeof(double)) icon = Icons.Material.Filled.Numbers;
-    <!-- if (Task.Type == typeof(MathFormula)) icon = Icons.Material.Filled.Calculate;  -->
-}
-
-@if (!Editing) {
+﻿@if (!Editing) {
         <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-            <MudIcon Icon="@icon" Size="Size.Small" />
+            <MudIcon Icon="@Icon" Size="Size.Small" />
             <MudText Typo="Typo.body1" Class="pl-2">@Task.Label</MudText>
         </MudToolBar>
 }
 else {
     @if (Group.EditableTaskIndex == Group.Tasks.IndexOf(Task)) {
         <MudToolBar Row="true" Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-            <MudIcon Icon="@icon" Size="Size.Small" />
+            <MudIcon Icon="@Icon" Size="Size.Small" />
             <MudInput @bind-Value="Task.Label" Placeholder="@Task.Label" Margin="Margin.Normal" Class="mb-n2 mt-n2 pr-8n pl-1 pt-1"
             Variant="Variant.Filled" Immediate="false" TextChanged=@(()=> SubmitTaskEdit()) FullWidth="true"/>
             <MudSpacer />
@@ -30,7 +19,7 @@ else {
         <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
             <MudMenu Dense="true">
                 <ActivatorContent>
-                    <MudChip Icon="@icon" Size="Size.Small" Color="Color.Primary"/>
+                    <MudChip Icon="@Icon" Size="Size.Small" Color="Color.Primary"/>
                 </ActivatorContent>
                 <ChildContent>
                     <MudMenuItem Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" OnClick="@(()=> SelectType(0))">Checkbox</MudMenuItem>
@@ -59,6 +48,19 @@ else {
     bool editMode = false; //used to prevent the text field from exiting immediately when using TextChanged event handler
 
     #region Button Functions
+
+    string Icon { 
+        get{
+            if (Task.Type == typeof(bool)) return Icons.Material.Filled.CheckBox;
+            if (Task.Type == typeof(string)) return Icons.Material.Filled.TextSnippet;
+            if (Task.Type == typeof(List<string>)) return Icons.Material.Filled.List;
+            if (Task.Type == typeof(DateTime)) return Icons.Material.Filled.CalendarMonth;
+            if (Task.Type == typeof(double)) return Icons.Material.Filled.Numbers;
+            if (Task.Type == typeof(PatientTaskCalculation)) return Icons.Material.Filled.Calculate;
+
+            return Icons.Material.Filled.QuestionMark;
+        }
+    }
 
     async Task IncrementTask() {
         int index = Group.Tasks.IndexOf(Task);
