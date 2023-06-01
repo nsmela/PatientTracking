@@ -3,17 +3,17 @@
         <!-- List View: cannot change anything -->
         default:
             <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true">
-                <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">Task Name</MudText>
-                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0"> 
-                    <MudCheckBox @bind-Checked="TaskItem.Checked" Class="d-inline-flex mt-n3 mr-n4" Size="Size.Small" />
+                <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">@TaskItem.Label</MudText>
+                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0">
+                    <MudCheckBox Class="d-inline-flex mt-n3 mr-n4" Size="Size.Small" Checked="@TaskItem.Checked" T="bool" CheckedChanged="(value) => OnValueChanged(value)" />
                 </MudPaper>
             </MudPaper>
             break;
         <!-- Data Entry Only: can change the value only -->
         case EditMode.DataEntry:
-            <MudCheckBox Checked="@TaskItem.Checked" 
+            <MudCheckBox Checked="@TaskItem.Checked" T="bool"
                 LabelPosition="LabelPosition.Start" Label="@TaskItem.Label"
-                ValueChanged="@OnValueChanged()" />
+                CheckedChanged="(value) => OnValueChanged(value)" />
             break;
     }
     <!-- Edit: can edit value and settings -->
@@ -25,7 +25,8 @@
     [Parameter] public EditMode Editing { get; set; }
     [Parameter] public EventCallback<PatientTaskBool> GroupChanged { get; set; }
 
-    async Task OnValueChanged() {
+    async Task OnValueChanged(bool value) {
+        TaskItem.SetValue(value);
         await GroupChanged.InvokeAsync(TaskItem);
     }
 }

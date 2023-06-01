@@ -49,6 +49,7 @@
         public TemplateService() {
             _groupTemplates = new List<TaskGroup>{
                 new TaskGroup("General Tasks",  new List<TaskItem>{
+                    new TaskItem{Label = "Due By:", Type = typeof(DateTime)},
                     new TaskItem{Label = "Approved by Oncologist", Type=typeof(bool) },
                     new TaskItem{Label = "Approved by Physics", Type=typeof(string)},
                     new TaskItem{Label = "Approved by Chemotherapy", Type=typeof(bool)}},
