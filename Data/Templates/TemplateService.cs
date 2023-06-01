@@ -1,7 +1,23 @@
-﻿namespace PatientTracking.Data.Templates {
+﻿using PatientTracking.Data.Patient;
+
+namespace PatientTracking.Data.Templates {
     public class TaskItem {
         public string Label { get; set; }
         public Object Type { get; set; } = typeof(bool);
+        public Object Value {get; set; } = null;
+        public TaskGroup Parent { get; set; }
+        public TaskItem(string label, Object type, TaskGroup parent = null, Object value = null) {
+            Label = label;
+            Type = type;
+            Parent = parent;
+            Value = value;
+        }
+        public TaskItem(TaskItem copy) {
+            Label = copy.Label;
+            Type = copy.Type;
+            Parent = copy.Parent;
+            Value = copy.Value;
+        }
     }
 
     public class TaskGroup {
@@ -10,18 +26,30 @@
         public List<TaskItem> Tasks { get; set; }
         public int EditableTaskIndex { get; set; } = -1;
         public TemplateStatus Status { get; set; } = TemplateStatus.Active;
-
-        public TaskGroup(string label, List<TaskItem> tasks, int? id) {
+        public TemplateItem Parent { get; set; }
+        public TaskGroup(string label, List<TaskItem> tasks, int? id = null, TemplateItem parent = null) {
             Id = id;
             Label = label;
+            Parent = parent;
+
             Tasks = tasks;
+            foreach(var task in Tasks) task.Parent = this;
+            
+        }
+
+        public TaskGroup(string label) {
+            Label = label;
+            Tasks = new();
+            Id = null;
+            Parent = null;
         }
 
         public TaskGroup Copy() {
-            var tasks = new List<TaskItem>();
-            Tasks.ForEach(t => tasks.Add(new TaskItem { Label = t.Label, Type = t.Type }));
- 
-            return new TaskGroup(this.Label, tasks, this.Id);
+            var group = new TaskGroup(this.Label, new(), this.Id);
+            group.Parent = null;
+            Tasks.ForEach(t => group.Tasks.Add(new TaskItem(t.Label, t.Type, group)));
+
+            return group;
         }
     }
 
@@ -31,12 +59,26 @@
         public List<TaskGroup> Groups { get; set; }
         public int EditableGroupIndex { get; set; } = -1;
         public TemplateStatus Status { get; set; } = TemplateStatus.Active; //used to allow children to delete themselves
-        public TemplateItem Copy() {
-            var template = new TemplateItem { Label = this.Label, Id= this.Id, EditableGroupIndex = this.EditableGroupIndex, Groups = new List<TaskGroup>() };
-            foreach(var group in Groups) {
-                template.Groups.Add(group.Copy());
+        public TemplateItem(int id, string label, List<TaskGroup> groups) {
+            Id = id;
+            Label = label;
+            Groups = groups;
+            foreach (var group in groups) group.Parent = this;
+        }
+
+        public TemplateItem(TemplateItem copy) {
+            Id = copy.Id;
+            Label = copy.Label;
+            EditableGroupIndex = copy.EditableGroupIndex;
+            Status = copy.Status;
+
+            Groups = new List<TaskGroup>();
+            foreach (var group in copy.Groups) {
+                var g = group.Copy();
+                g.Parent = this;
+                Groups.Add(g);
             }
-            return template;
+            
         }
     }
 
@@ -47,32 +89,37 @@
         private List<TaskGroup> _groupTemplates { get; set; }
 
         public TemplateService() {
-            _groupTemplates = new List<TaskGroup>{
-                new TaskGroup("General Tasks",  new List<TaskItem>{
-                    new TaskItem{Label = "Due By:", Type = typeof(DateTime)},
-                    new TaskItem{Label = "Approved by Oncologist", Type=typeof(bool) },
-                    new TaskItem{Label = "Approved by Physics", Type=typeof(string)},
-                    new TaskItem{Label = "Approved by Chemotherapy", Type=typeof(bool)}},
-                    0),
-                new TaskGroup("Physics Planning", new List<TaskItem>{
-                    new TaskItem{Label = "Dry Run Completed", Type = typeof(List<string>)},
-                    new TaskItem{Label = "VMAT QA Required", Type = typeof(double)}},
-                    1),
-                new TaskGroup("Brachytherapy", new List<TaskItem>{
-                    new TaskItem{Label = "Seed Supply Checked", Type = typeof(bool)},
-                    new TaskItem{Label = "Applicator Size Verified", Type = typeof(bool)},
-                    new TaskItem{Label = "Patient Education Completed", Type = typeof(bool)}},
-                    2),
-            };
+            _groupTemplates = new List<TaskGroup>();
 
-            _templates = new List<TemplateItem>{
-                new TemplateItem {Id = 0, Label = "Standard Patient", Groups = new List<TaskGroup>{
-                    _groupTemplates[0].Copy(), _groupTemplates[1].Copy()}
-                },
-                new TemplateItem {Id = 1, Label = "Brachy Patient", Groups = new List<TaskGroup>{
-                    _groupTemplates[0].Copy(), _groupTemplates[2].Copy()}
-                }
-            };
+            _groupTemplates.Add(new TaskGroup("General Tasks", new List<TaskItem> {
+                new TaskItem("Due By:", typeof(DateTime)),
+                new TaskItem("Assigned to: ", typeof(string)),
+                new TaskItem("Approved by Oncologist", typeof(bool)),
+                new TaskItem("Total Volume (mL):", typeof(double)),
+                new TaskItem("Expected MU:", typeof(PatientTaskCalculation)),
+                new TaskItem("Status", typeof(List<string>), null, new List<string> { "Arrived", "Onc Eval", "Physics Eval", "Treat Ready", "Treated"})
+            }));
+
+            _groupTemplates.Add(new TaskGroup("Physics Planning", new List<TaskItem> {
+                new TaskItem("Due By:", typeof(DateTime)),
+                new TaskItem("Assigned to: ", typeof(string)),
+                new TaskItem("Dry run complete", typeof(bool)),
+                new TaskItem("VMAT QA", typeof(bool)),
+                new TaskItem("Approved", typeof(bool))
+            }));
+
+            _groupTemplates.Add(new TaskGroup("Brachytherapy", new List<TaskItem> {
+                new TaskItem("Assigned to: ", typeof(string)),
+                new TaskItem("Seed Supply Checked", typeof(bool)),
+                new TaskItem("Seed Exchange", typeof(DateTime))
+            }));
+
+            _templates = new List<TemplateItem>();
+            _templates.Add(new TemplateItem(0, "Standard Patient", new List<TaskGroup> {
+                _groupTemplates[0].Copy(), _groupTemplates[1].Copy() }));
+            _templates.Add(new TemplateItem(1, "Brachy Patient", new List<TaskGroup> {
+                _groupTemplates[0].Copy(), _groupTemplates[2].Copy() }));
+
         }
 
         public async Task<List<TemplateItem>> GetAllTemplates() => _templates;

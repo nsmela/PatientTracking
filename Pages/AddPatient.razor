@@ -200,7 +200,7 @@
     }
 
     private async Task AddTask(TaskGroup group){
-        var task = new TaskItem { Label = "New Task", Type = (typeof(bool)) };
+        var task = new TaskItem("New Task", (typeof(bool)), group);
         group.Tasks.Add(task);
     }
 

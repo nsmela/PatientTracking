@@ -72,7 +72,7 @@
     string groupSelected = "Custom";
 
     protected override async Task OnParametersSetAsync() {
-        newTemplate = PatientTemplate.Copy();
+        newTemplate = new TemplateItem(PatientTemplate);
 
         var groups = new List<string>();
         Array.ForEach(GroupTemplates, g => groups.Add(g.Label));
@@ -108,16 +108,18 @@
             for (int i = 0; i < GroupTemplates.Count(); i++) {
                 if (GroupTemplates[i].Label == newGroupLabel) {
                     index = i;
+                    break;
                 } 
             }
 
             if(index >= 0){
                 group = GroupTemplates[index].Copy();
+                group.Parent = PatientTemplate;
             }
         }
 
         foreach(var g in newTemplate.Groups){
-            if (g.Id == group.Id) return; //already added
+            if (g.Label == group.Label) return; //already added
         }
 
         newTemplate.Groups.Add(group);
@@ -133,7 +135,7 @@
     }
 
     async Task ResetTemplate(){
-        newTemplate = PatientTemplate.Copy();
+        newTemplate = new TemplateItem(PatientTemplate);
         nameEditMode = false;
         newGroupOpen = false;
         newGroupLabel = string.Empty;

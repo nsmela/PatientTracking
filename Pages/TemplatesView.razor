@@ -47,23 +47,7 @@
         var result = await templateService.GetAllTemplates();
         var templates = new List<TemplateItem>();
 
-        result.ForEach(r => {
-            var template = new TemplateItem {
-                    Label = r.Label,
-                    Id = r.Id,
-                    Groups = new List<TaskGroup>()
-                };
-
-            var groups = new List<TaskGroup>();
-            r.Groups.ForEach(g => {
-                var group = new TaskGroup(g.Label, new List<TaskItem>(), g.Id);
-                g.Tasks.ForEach(t => group.Tasks.Add(new TaskItem { Label = t.Label, Type = t.Type }));
-                groups.Add(group);
-            });
-            template.Groups = groups;
-            templates.Add(template);
-        });
-
+        result.ForEach(r => templates.Add(new TemplateItem(r)));
         Templates = templates.ToArray();
     }
 
@@ -80,7 +64,7 @@
     }
 
     async Task AddTemplate(){
-        var template = new TemplateItem { Label = newTemplateLabel, EditableGroupIndex = -1, Groups = new(), Id = Templates.Length };
+        var template = new TemplateItem(Templates.Length, newTemplateLabel, new());
         await templateService.AddTemplate(template);
 
         newTemplateOpen = false;

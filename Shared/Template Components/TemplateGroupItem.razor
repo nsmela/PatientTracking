@@ -141,7 +141,7 @@
     }
 
     async Task SubmitNewTask(){
-        Group.Tasks.Add( new TaskItem { Label = newTaskLabel });
+        Group.Tasks.Add(new TaskItem(newTaskLabel, typeof(bool)));
 
         newTaskOpen = false;
         newTaskLabel = string.Empty;
