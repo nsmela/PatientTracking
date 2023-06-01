@@ -19,10 +19,10 @@
             <MudIconButton Class="d-inline-flex" Size="Size.Small" Icon="@Icons.Material.Filled.CheckBox" />
         </MudPaper>
         <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true" > 
-            <MudText class="px-2 pt-1 d-inline-flex">Name</MudText>
-            <MudPaper Class="d-inline-flex mt-1 px-2" Height="18px" Width="100%" Square="true" Elevation="0"> 
-                <MudTextField Typo="Typo.body2" Class="mt-n5" T="string" DisableUnderLine="true"
-                    Variant="Variant.Text" Margin="Margin.Dense" FullWidth="true"/>
+            <MudText class="px-2 pt-1 d-inline-flex">Name Entry:</MudText>
+            <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2 flex-grow-1" Height="18px" Square="true" Elevation="0"> 
+                <MudTextField Typo="Typo.body2" Class="mt-n4" T="string" DisableUnderLine="true"
+                    Variant="Variant.Text" Margin="Margin.Dense" />
             </MudPaper>
         </MudPaper>
     </MudPaper>
