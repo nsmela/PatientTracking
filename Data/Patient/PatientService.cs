@@ -14,7 +14,9 @@ namespace PatientTracking.Data.Patient {
                         Tasks = new List<IPatientTask> { 
                             new PatientTaskDate{Label = "Due Date:", Date=DateTime.Today.AddDays(1)},
                             new PatientTaskBool{Label = "Requisition", Checked = true}, 
-                            new PatientTaskText { Label = "Site", Text = "" } 
+                            new PatientTaskText { Label = "Site", Text = "Lungs" },
+                            new PatientTaskNumber {Label = "Site Volume:", Value=1.023f},
+                            new PatientTaskList {Label = "Progress Status", SelectedOption=0, Options = new List<string>{"Admitted", "Onc Review Complete", "Phys Review Complete", "Ready for treatment"}}
                         } },
                     new PatientTaskGroup {Label = "Setup",
                         Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" }, new PatientTaskBool{Label = "Tolerance tables" } } },
