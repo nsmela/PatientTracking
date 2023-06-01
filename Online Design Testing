@@ -15,13 +15,14 @@
         <MudText>Group Name </MudText>
         <!-- Tasks -->
         <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true" > 
-            <MudText class="pl-2 pt-1 d-inline-flex flex-grow-1">Task Name</MudText>
+            <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">Task Name</MudText>
             <MudIconButton Class="d-inline-flex" Size="Size.Small" Icon="@Icons.Material.Filled.CheckBox" />
         </MudPaper>
         <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true" > 
-            <MudText class="pl-2 pt-1 d-inline-flex">Name</MudText>
-            <MudPaper Class="d-inline-flex" Height="28px" Width="100%" Square="true" Elevation="0"> 
-                <MudTextField Class="my-n5" T="string" Variant="Variant.Text" Margin="Margin.Dense" FullWidth="true"/>
+            <MudText class="px-2 pt-1 d-inline-flex">Name</MudText>
+            <MudPaper Class="d-inline-flex mt-1 px-2" Height="18px" Width="100%" Square="true" Elevation="0"> 
+                <MudTextField Typo="Typo.body2" Class="mt-n5" T="string" DisableUnderLine="true"
+                    Variant="Variant.Text" Margin="Margin.Dense" FullWidth="true"/>
             </MudPaper>
         </MudPaper>
     </MudPaper>
