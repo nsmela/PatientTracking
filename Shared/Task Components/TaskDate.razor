@@ -1,0 +1,32 @@
+﻿<MudToolBar>
+    @switch (Editing) {
+        <!-- List View: cannot change anything -->
+        default:
+            <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true">
+                <MudText class="mx-2 pt-1 d-inline-flex">@TaskItem.Label</MudText>
+                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2 flex-grow-1" Height="18px" Width="30%" Square="true" Elevation="0">
+                    <MudTextField Typo="Typo.body2" Class="mt-n4" T="string" DisableUnderLine="true"
+                          Variant="Variant.Text" Margin="Margin.Dense" Text="@TaskItem.Date.ToString()" />
+                    <MudIconButton IconSize="Size.Small" Icon="@Icons.Material.Filled.CalendarMonth" />
+                </MudPaper>
+            </MudPaper>
+            break;
+        <!-- Data Entry Only: can change the value only -->
+        case EditMode.DataEntry:
+
+            break;
+    }
+    <!-- Edit: can edit value and settings -->
+    <!-- Maybe use a generic component? -->
+</MudToolBar>
+
+@code {
+    [Parameter] public PatientTaskDate TaskItem { get; set; }
+    [Parameter] public EditMode Editing { get; set; }
+    [Parameter] public EventCallback<PatientTaskDate> GroupChanged { get; set; }
+
+    async Task OnValueChanged(DateTime value) {
+        TaskItem.Date = value;
+        await GroupChanged.InvokeAsync(TaskItem);
+    }
+}

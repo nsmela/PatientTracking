@@ -1,5 +1,8 @@
 ﻿@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" />}
 else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" /> }
+else if (TaskItem.GetType() == typeof(PatientTaskDate)) { <TaskDate TaskItem="@(TaskItem as PatientTaskDate)" /> }
+else if (TaskItem.GetType() == typeof(PatientTaskNumber)) { <TaskNumber TaskItem="@(TaskItem as PatientTaskNumber)" /> }
+else if (TaskItem.GetType() == typeof(PatientTaskList)) { <TaskList TaskItem="@(TaskItem as PatientTaskList)" /> }
 @code {
     [Parameter] public IPatientTask TaskItem { get; set; }
     [Parameter] public EditMode Edit { get; set; } = EditMode.View;

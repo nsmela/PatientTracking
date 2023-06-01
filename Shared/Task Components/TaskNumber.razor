@@ -1,0 +1,26 @@
+﻿@switch (Editing) {
+    <!-- View Only: cannot change anything -->
+    default:
+        <MudPaper Class="mud-theme-secondary d-flex flex-nowrap flex-grow-1 mt-1" Outlined="true">
+            <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">@TaskItem.Label</MudText>
+            <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0">
+                <MudNumericField Class="mt-n5" @bind-Value="@TaskItem.Value" Variant="Variant.Text" DisableUnderLine="true" HideSpinButtons="true" />
+            </MudPaper>
+        </MudPaper>
+        break;
+    <!-- Data Entry Only: can change the value only -->
+    case EditMode.DataEntry:
+
+        break;
+}
+<!-- Edit: can edit value and settings -->
+<!-- Maybe use a generic component? -->
+@code {
+    [Parameter] public PatientTaskNumber TaskItem { get; set; }
+    [Parameter] public EditMode Editing { get; set; }
+    [Parameter] public EventCallback<PatientTaskNumber> GroupChanged { get; set; }
+
+    async Task OnValueChanged() {
+        await GroupChanged.InvokeAsync(TaskItem);
+    }
+}

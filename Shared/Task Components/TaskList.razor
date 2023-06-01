@@ -1,0 +1,41 @@
+﻿<MudToolBar>
+    @switch (Editing) {
+        <!-- List View: cannot change anything -->
+        default:
+            <MudPaper Class="mud-theme-secondary d-flex flex-nowrap flex-grow-1 mt-1" Outlined="true">
+                <MudText class="mx-2 pt-1 d-inline-flex">@TaskItem.Label</MudText>
+                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2  flex-grow-1" Height="18px" Square="true" Elevation="0">
+                    <MudSelect Class="mt-n5" T="string" DisableUnderLine="true" SelectedValues="@GetSelectedOption()">
+                        @foreach(var option in TaskItem.Options){
+                            int index = TaskItem.Options.IndexOf(option);
+                            <MudSelectItem Value="@option">@option</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudPaper>
+            </MudPaper>
+            break;
+        <!-- Data Entry Only: can change the value only -->
+        case EditMode.DataEntry:
+
+            break;
+    }
+    <!-- Edit: can edit value and settings -->
+    <!-- Maybe use a generic component? -->
+</MudToolBar>
+
+@code {
+    [Parameter] public PatientTaskList TaskItem { get; set; }
+    [Parameter] public EditMode Editing { get; set; }
+    [Parameter] public EventCallback<PatientTaskList> GroupChanged { get; set; }
+
+    string[] GetSelectedOption(){
+        var result = new string[1];
+        result[0] = TaskItem.Options[TaskItem.SelectedOption];
+        return result;
+    }
+
+    async Task OnValueChanged(string value) {
+        TaskItem.SelectedOption = TaskItem.Options.IndexOf(value);
+        await GroupChanged.InvokeAsync(TaskItem);
+    }
+}
