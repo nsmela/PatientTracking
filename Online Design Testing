@@ -38,8 +38,25 @@
                     <MudIconButton IconSize="Size.Small" Icon="@Icons.Material.Filled.CalendarMonth"/>
             </MudPaper>
         </MudPaper>
+        <!-- Number -->
+        <MudPaper Class="mud-theme-secondary d-flex flex-nowrap flex-grow-1 mt-1" Outlined="true" > 
+            <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">Number Name:</MudText>
+            <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0"> 
+                <MudNumericField Class="mt-n5" @bind-Value="DoubleValue" Variant="Variant.Text" DisableUnderLine="true" HideSpinButtons="true"/>
+            </MudPaper>
+        </MudPaper>
+        <!-- List Item -->
+        <MudPaper Class="mud-theme-secondary d-flex flex-nowrap flex-grow-1 mt-1" Outlined="true" > 
+            <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">Number Name:</MudText>
+            <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0"> 
+                <MudSelect Class="mt-n5" T="string" DisableUnderLine="true"> 
+                    <MudSelectItem Value="@("Option 1")" />
+                    <MudSelectItem Value="@("Option 2")" />
+                    <MudSelectItem Value="@("Option 3")" />
+                </MudSelect>
+            </MudPaper>
+        </MudPaper>
     </MudPaper>
-
     <!-- Task Group -->
     <MudPaper Class="mud-theme-tertiary pa-1 mt-2">
         <MudText>Group Name </MudText>
