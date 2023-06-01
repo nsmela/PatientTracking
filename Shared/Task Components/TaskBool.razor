@@ -11,10 +11,9 @@
             break;
         <!-- Data Entry Only: can change the value only -->
         case EditMode.DataEntry:
-            <MudCheckBox T="bool" CheckedChanged="@OnValueChanged"
-                 Variant="Variant.Text"
-                 Label="@TaskItem.Label" LabelPosition="LabelPosition.Start"
-                 Dense="true" Size="Size.Small" />
+            <MudCheckBox Checked="@TaskItem.Checked" 
+                LabelPosition="LabelPosition.Start" Label="@TaskItem.Label"
+                ValueChanged="@OnValueChanged()" />
             break;
     }
     <!-- Edit: can edit value and settings -->
@@ -26,8 +25,7 @@
     [Parameter] public EditMode Editing { get; set; }
     [Parameter] public EventCallback<PatientTaskBool> GroupChanged { get; set; }
 
-    async Task OnValueChanged(bool value) {
-        TaskItem.Checked = value;
+    async Task OnValueChanged() {
         await GroupChanged.InvokeAsync(TaskItem);
     }
 }

@@ -10,7 +10,13 @@
         break;
     <!-- Data Entry Only: can change the value only -->
     case EditMode.DataEntry:
-
+        <MudNumericField T="double"
+                 HideSpinButtons="true"
+                 Label="@TaskItem.Label"
+                 Variant="Variant.Outlined"
+                 Margin="Margin.Dense"
+                 ValueChanged="() => OnValueChanged()"
+                 Value="@TaskItem.Value" />
         break;
 }
 <!-- Edit: can edit value and settings -->

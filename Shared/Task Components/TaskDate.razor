@@ -13,7 +13,12 @@
             break;
         <!-- Data Entry Only: can change the value only -->
         case EditMode.DataEntry:
-
+            <MudDatePicker T="DateTime"
+                   Label="@TaskItem.Label"
+                   Variant="Variant.Outlined"
+                   Margin="Margin.Dense"
+                   DateChanged="(value) => OnValueChanged(value)"
+                   Date="@TaskItem.Date" />
             break;
     }
     <!-- Edit: can edit value and settings -->
@@ -25,8 +30,9 @@
     [Parameter] public EditMode Editing { get; set; }
     [Parameter] public EventCallback<PatientTaskDate> GroupChanged { get; set; }
 
-    async Task OnValueChanged(DateTime value) {
-        TaskItem.Date = value;
+    async Task OnValueChanged(DateTime? value) {
+        if (value is null) return;
+        TaskItem.Date = value.Value;
         await GroupChanged.InvokeAsync(TaskItem);
     }
 }

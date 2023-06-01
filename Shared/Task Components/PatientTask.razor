@@ -1,8 +1,8 @@
-﻿@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" />}
-else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" /> }
-else if (TaskItem.GetType() == typeof(PatientTaskDate)) { <TaskDate TaskItem="@(TaskItem as PatientTaskDate)" /> }
-else if (TaskItem.GetType() == typeof(PatientTaskNumber)) { <TaskNumber TaskItem="@(TaskItem as PatientTaskNumber)" /> }
-else if (TaskItem.GetType() == typeof(PatientTaskList)) { <TaskList TaskItem="@(TaskItem as PatientTaskList)" /> }
+﻿@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" Editing="@Edit"/>}
+else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" Editing="@Edit"/> }
+else if (TaskItem.GetType() == typeof(PatientTaskDate)) { <TaskDate TaskItem="@(TaskItem as PatientTaskDate)" Editing="@Edit"/> }
+else if (TaskItem.GetType() == typeof(PatientTaskNumber)) { <TaskNumber TaskItem="@(TaskItem as PatientTaskNumber)" Editing="@Edit"/> }
+else if (TaskItem.GetType() == typeof(PatientTaskList)) { <TaskList TaskItem="@(TaskItem as PatientTaskList)" Editing="@Edit"/> }
 @code {
     [Parameter] public IPatientTask TaskItem { get; set; }
     [Parameter] public EditMode Edit { get; set; } = EditMode.View;
