@@ -6,9 +6,9 @@
 } 
 else{
     <MudPaper Class="pa-1 mud-theme-primary rounded-t-lg" MaxWidth="MaxWidth.Medium">
-        <MudContainer Class="d-flex flex-row mud-theme-warning" Dense="true">
-            <MudText Class="object-fill mud-theme-primary">@Date</MudText>
-            <MudIconButton Class="mud-theme-primary object-right" Icon="@Icons.Material.Filled.Settings" OnClick="@EditPatient" Size="Size.Small" />
+        <MudContainer Class="d-flex flex-row flex-grow-1 mud-theme-warning justify-start" Dense="true">
+            <MudText Class="mud-theme-primary flex-grow-1">@Date</MudText>
+            <MudIconButton Class="mud-theme-primary flex-none" Icon="@Icons.Material.Filled.Settings" OnClick="@EditPatient" Size="Size.Small" />
         </MudContainer>
         <MudStack Class="ma-1">
             <MudPaper Elevation="2" Class="pa-2 mud-theme-secondary">
