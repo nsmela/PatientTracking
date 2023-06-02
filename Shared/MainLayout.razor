@@ -7,12 +7,13 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText>RADIGATE: Medical Physics Patient Management</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5" Class="mt-1">Patient Tracking</MudText>
+            <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
@@ -30,7 +31,9 @@
         PaletteDark = new PaletteDark(){
                 Primary = "#2C74B3",
                 Secondary = "#205295",
-                Tertiary = "#144272"
+                Tertiary = "#144272",
+                Background = "#0A2647",
+                AppbarBackground = "#205295"
         }
     };
 

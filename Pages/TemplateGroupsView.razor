@@ -1,14 +1,16 @@
 ﻿@page "/templates/groups"
 
-<MudContainer Class="pa-1 align-items-baseline">
-    <MudPaper MaxHeight="64px" MaxWidth="660px" Class="pa-2 ma-2">
-        <MudStack Row="true">
-            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" 
-                StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newGroupOpen = true)">Add Group </MudButton>
-            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" 
-                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
-        </MudStack>
-    </MudPaper>
+<MudPaper MaxWidth="660px" Class="ma-2">
+    <MudStack Row="true">
+        <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" 
+            StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newGroupOpen = true)">Add Group </MudButton>
+        <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" 
+            Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+    </MudStack>
+</MudPaper>
+
+<MudItem Class="pa-1 align-items-baseline">
+
     <!-- Existing Groups -->
     <MudStack Row=@true>
         <!-- New Group -->
@@ -23,7 +25,7 @@
             <TemplateGroupDisplay GroupTemplate="@group" Edit="false" GroupChanged="@OnGroupChanged"/>
         }
     </MudStack>
-</MudContainer>
+</MudItem>
 
 @code {
     [Inject] PatientService patientService { get; set; }

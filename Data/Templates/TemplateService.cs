@@ -149,6 +149,8 @@ namespace PatientTracking.Data.Templates {
             _templates[template.Id] = template;
         }
         public async Task UpdateGroup(TaskGroup group) {
+            if(group.Id is null) group.Id = _groupTemplates.FindIndex(g => g.Label == group.Label);
+            if (group.Id < 0) return;
             _groupTemplates[(int)group.Id] = group;
         }
         public async Task RemoveTemplate(int index) {

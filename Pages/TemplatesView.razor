@@ -1,17 +1,18 @@
 ﻿@page "/templates"
 
-<MudContainer Class="pa-1 align-items-baseline">
-    <MudPaper MaxHeight="64px" MaxWidth="660px" Class="pa-2 ma-2">
-        <MudStack Row="true">
-            <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newTemplateOpen = true)">Add Template </MudButton>
-            <MudTextField Class="align-self-center" T="string" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
-        </MudStack>
-    </MudPaper>
+<MudPaper MaxHeight="64px" MaxWidth="660px" Class="ma-2 justify-center">
+    <MudStack Row="true">
+        <MudButton Variant="Variant.Outlined" Color="Color.Success" IconSize="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="@(()=> newTemplateOpen = true)">Add Template </MudButton>
+        <MudTextField T="string" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+    </MudStack>
+</MudPaper>
+
+<MudItem >
     <!-- Templates -->
-    <MudStack Row=@true >
+    <MudStack Class="d-flex justify-start flex-grow-1" Row="@true">
         <!-- New Template -->
         @if(newTemplateOpen){
-            <MudPaper Width="560px" Class="ma-2" Outlined="true" Style="@($"background:{Colors.BlueGrey.Darken4};")" >
+            <MudPaper Width="560px" Class="ml-2" Style="@($"background:{Colors.BlueGrey.Darken4};")" >
                 <MudTextField @bind-Value="newTemplateLabel" Placeholder="New Template" DisableUnderLine="true" />
                 <MudButton OnClick="AddTemplate" >Add Template</MudButton>
             </MudPaper>
@@ -21,7 +22,7 @@
             <TemplateDisplay PatientTemplate=@template Templates=@Templates TemplateChanged=@OnTemplatesChanged GroupTemplates="@GroupTemplates"/>
         }   
     </MudStack>
-</MudContainer>
+</MudItem>
     
 
 
