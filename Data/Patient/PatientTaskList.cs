@@ -6,7 +6,7 @@ namespace PatientTracking.Data.Patient {
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.List;
         public string Label { get; set; }
-        public List<string> Options { get; set; }
+        public List<string> Options { get; set; } = new();
         public int SelectedOption { get; set; }
         public void SetValue(object value) {
             if (value is null) return;

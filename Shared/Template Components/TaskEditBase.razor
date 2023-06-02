@@ -27,6 +27,7 @@ else {
                     <MudMenuItem Icon="@Icons.Material.Filled.List" Size="Size.Small" OnClick="@(()=> SelectType(2))">Dropbox</MudMenuItem>
                     <MudMenuItem Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" OnClick="@(()=> SelectType(3))">Date</MudMenuItem>
                     <MudMenuItem Icon="@Icons.Material.Filled.Numbers" Size="Size.Small" OnClick="@(()=> SelectType(4))">Number</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.Calculate" Size="Size.Small" OnClick="@(()=> SelectType(5))">Calculate</MudMenuItem>
                 </ChildContent>
             </MudMenu>
             <MudText Typo="Typo.body1" Class="pl-2">@Task.Label</MudText>
@@ -56,6 +57,7 @@ else {
         if (index == 2) Task.Type = typeof(List<string>);
         if (index == 3) Task.Type = typeof(DateTime?);
         if (index == 4) Task.Type = typeof(double);
+        if (index == 5) Task.Type = typeof(PatientTaskCalculation);
 
         await GroupChanged.InvokeAsync(Group);
     }

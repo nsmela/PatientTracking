@@ -1,7 +1,4 @@
 ﻿@page "/newpatient"
-@inject NavigationManager NavigationManager
-@inject PatientService PatientService
-
 
 <h3>Add Patient</h3>
 <MudGrid>
@@ -99,6 +96,9 @@
 
 @code {
     [Inject] private TemplateService _templateService { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private PatientService PatientService { get; set; }
+
     TemplateItem[] _patientTemplates;
     TaskGroup[] _groupTemplates;
 
@@ -207,7 +207,7 @@
     private async Task Submit(){
         if (!success) return;
 
-        Patient patient = new Patient();
+        Patient patient = new Patient(id, firstName is null ? string.Empty : firstName, lastName, new());
         patient.Id = id;
         patient.LastName = lastName;
         if (firstName is null) patient.FirstName = string.Empty; else patient.FirstName = firstName;
@@ -215,13 +215,17 @@
 
         //task groups and tasks
         foreach(var group in groups){
-            var patientGroup = new PatientTaskGroup { Label = group.Label, Tasks = new() };
+            var patientGroup = new PatientTaskGroup (group.Label, new());
+            patientGroup.Parent = patient;
+
             foreach(var task in group.Tasks){
-                if (task.Type == typeof(bool)) patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label });
-                if (task.Type == typeof(string)) patientGroup.Tasks.Add(new PatientTaskText{ Label = task.Label });
-                if (task.Type == typeof(DateTime)) patientGroup.Tasks.Add(new PatientTaskDate { Label = task.Label, Date = DateTime.Today });
-                if (task.Type == typeof(List<string>)) patientGroup.Tasks.Add(new PatientTaskList { Label = task.Label, Options = new List<string>{"option 1", "option2"}, SelectedOption = 0 });
-                if (task.Type == typeof(double)) patientGroup.Tasks.Add(new PatientTaskNumber { Label = task.Label, Value = 0.0f });
+                if (task.Type == typeof(bool)) patientGroup.Tasks.Add(new PatientTaskBool {Label = task.Label, Parent = patientGroup });
+                if (task.Type == typeof(string)) patientGroup.Tasks.Add(new PatientTaskText { Label = task.Label, Parent = patientGroup });
+                if (task.Type == typeof(DateTime)) patientGroup.Tasks.Add(new PatientTaskDate { Label = task.Label, Parent = patientGroup });
+                if (task.Type == typeof(List<string>)) patientGroup.Tasks.Add(new PatientTaskList { 
+                    Label = task.Label, Options = new List<string> { "option 1", "option2", "option3" }, SelectedOption = 0, Parent = patientGroup });
+                if (task.Type == typeof(double)) patientGroup.Tasks.Add(new PatientTaskNumber { Label = task.Label, Parent = patientGroup });
+                if (task.Type == typeof(PatientTaskCalculation)) patientGroup.Tasks.Add(new PatientTaskCalculation { Label = task.Label, Parent = patientGroup });
             }
             patient.TaskGroups.Add(patientGroup);
         }

@@ -7,7 +7,7 @@ namespace PatientTracking.Data.Patient {
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
-        public string Formula { get; set; }
+        public string Formula { get; set; } = string.Empty;
         public void SetValue(object value) {
             if (value is null) return;
             if (value.GetType() != typeof(string)) return;

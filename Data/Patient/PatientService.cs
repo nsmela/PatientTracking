@@ -3,54 +3,35 @@
 namespace PatientTracking.Data.Patient {
     public class PatientService {
         private List<Patient> patients = new List<Patient> {
-            new Patient{
-                FirstName = "Alex",
-                LastName = "Trebek",
-                Id = "01122",
-                StartDate = new DateTime(2023, 01, 01),
-                Status = 3,
-                TaskGroups = new List<PatientTaskGroup> {
-                    new PatientTaskGroup {Label = "Standard",
-                        Tasks = new List<IPatientTask> { 
+            new Patient("001", "Alexander", "Trebek", new List<PatientTaskGroup> {
+                    new PatientTaskGroup("Standard", new List<IPatientTask> { 
                             new PatientTaskDate{Label = "Due Date:", Date=DateTime.Today.AddDays(1)},
                             new PatientTaskBool{Label = "Requisition", Checked = true}, 
                             new PatientTaskText { Label = "Site", Text = "Lungs" },
                             new PatientTaskNumber {Label = "Site Volume:", Value=1.023f},
                             new PatientTaskList {Label = "Progress Status", SelectedOption=0, Options = new List<string>{"Admitted", "Onc Review Complete", "Phys Review Complete", "Ready for treatment"}}
-                        } },
-                    new PatientTaskGroup {Label = "Setup",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" }, new PatientTaskBool{Label = "Tolerance tables" } } },
-                    new PatientTaskGroup {Label = "Dose Distribution",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "Calculation volume", Checked = true}, new PatientTaskBool{Label = "Grid Size", Checked = true}, new PatientTaskBool{Label = "Algorithm", Checked = false} } }
-                } },
-            new Patient{
-                FirstName = "Vanna",
-                LastName = "White",
-                Id = "01123",
-                StartDate = new DateTime(2023, 11, 01),
-                Status = 0,
-                TaskGroups = new List<PatientTaskGroup> {
-                    new PatientTaskGroup {Label = "Standard",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "Requisition", Checked = true}, new PatientTaskText { Label = "Site", Text = "" } } },
-                    new PatientTaskGroup {Label = "Setup",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" } } },
-                    new PatientTaskGroup {Label = "Dose Distribution",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "Calculation volume", Checked = true}, new PatientTaskBool{Label = "Algorithm", Checked = false} } }
-                }},
-            new Patient{
-                FirstName = "Drew",
-                LastName = "Carey",
-                Id = "01124",
-                StartDate = new DateTime(2023, 04, 11),
-                Status = 2,
-                TaskGroups = new List<PatientTaskGroup> {
-                    new PatientTaskGroup {Label = "Standard",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "Requisition", Checked = true}, new PatientTaskText { Label = "Site", Text = "" } } },
-                    new PatientTaskGroup {Label = "Setup",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" }, new PatientTaskBool{Label = "Tolerance tables" } } },
-                    new PatientTaskGroup {Label = "Dose Distribution",
-                        Tasks = new List<IPatientTask> { new PatientTaskBool{Label = "Calculation volume", Checked = true}, new PatientTaskText{Label = "Dose Plan", Text="min_50gy_01"  } } }
-            } }
+                        }) ,
+                    new PatientTaskGroup( "Setup", new List<IPatientTask> { 
+                        new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" }, new PatientTaskBool{Label = "Tolerance tables" } } ),
+                    new PatientTaskGroup ("Dose Distribution", new List<IPatientTask> { 
+                        new PatientTaskBool{Label = "Calculation volume", Checked = true}, new PatientTaskBool{Label = "Grid Size", Checked = true}, new PatientTaskBool{Label = "Algorithm", Checked = false} } )
+                }) ,
+            new Patient("002", "Vanna", "White", new List<PatientTaskGroup> {
+                    new PatientTaskGroup ("Standard", new List<IPatientTask> { 
+                        new PatientTaskBool{Label = "Requisition", Checked = true}, new PatientTaskText { Label = "Site", Text = "" } } ),
+                    new PatientTaskGroup ("Setup", new List<IPatientTask> { 
+                        new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" } } ),
+                    new PatientTaskGroup ("Dose Distribution", new List<IPatientTask> { 
+                        new PatientTaskBool{Label = "Calculation volume", Checked = true}, new PatientTaskBool{Label = "Algorithm", Checked = false} } )
+                }),
+            new Patient("003", "Drew", "Carey", new List<PatientTaskGroup> {
+                    new PatientTaskGroup ("Standard", new List<IPatientTask> {
+                        new PatientTaskBool{Label = "Requisition", Checked = true}, new PatientTaskText { Label = "Site", Text = "" } } ),
+                    new PatientTaskGroup ("Setup", new List<IPatientTask> {
+                        new PatientTaskBool{Label = "SSD", Checked = true}, new PatientTaskBool{Label = "Tattoos" } } ),
+                    new PatientTaskGroup ("Dose Distribution", new List<IPatientTask> {
+                        new PatientTaskBool{Label = "Calculation volume", Checked = false}, new PatientTaskBool{Label = "Algorithm", Checked = true} } )
+                })
         };
 
         public Task<Patient[]> GetPatientsAsync() {
@@ -121,29 +102,24 @@ namespace PatientTracking.Data.Patient {
 
 
         private List<TasksTemplate> _taskTemplates = new List<TasksTemplate> {
-            new TasksTemplate(0, "Patient Machine Checks", new PatientTaskGroup {
-                Label = "Patient Machine Checks", Tasks = new List<IPatientTask> {
-                    new PatientTaskText {Label = "Plan Name"},
-                    new PatientTaskBool {Label = "Dry Run Test"},
-                    new PatientTaskBool {Label = "VMAT QA Completed"}
-                }
-            } ),
-            new TasksTemplate(1, "Plan Calculations", new PatientTaskGroup {
-                Label = "Plan Calculations", Tasks = new List<IPatientTask> {
-                    new PatientTaskText {Label = "Region of Interest (ROI)"},
-                    new PatientTaskText {Label = "Plan Strategy"},
-                    new PatientTaskBool {Label = "Oncologist Approved"},
-                    new PatientTaskBool {Label = "Physics Approved"}
-                }
-            }),
-            new TasksTemplate(2, "Brachytherapy Checklist", new PatientTaskGroup {
-                Label = "Brachytherapy Checklist", Tasks = new List<IPatientTask> {
-                    new PatientTaskDate {Label = "Plan Start"},
-                    new PatientTaskText {Label = "Oncologist Review Parameters"},
-                    new PatientTaskBool {Label = "Radiation Theraptists Consulted"},
-                    new PatientTaskBool {Label = "Seed Size Comparison Reviewed"}
-                }
-            })
+            new TasksTemplate(0, "Patient Machine Checks", new PatientTaskGroup("Patient Machine Checks", new List<IPatientTask> {
+                new PatientTaskText {Label = "Plan Name"},
+                new PatientTaskBool {Label = "Dry Run Test"},
+                new PatientTaskBool {Label = "VMAT QA Completed"}
+            })),
+            new TasksTemplate(1, "Plan Calculations", new PatientTaskGroup( "Plan Calculations", new List<IPatientTask> {
+                new PatientTaskText {Label = "Region of Interest (ROI)"},
+                new PatientTaskText {Label = "Plan Strategy"},
+                new PatientTaskBool {Label = "Oncologist Approved"},
+                new PatientTaskBool {Label = "Physics Approved"}
+            })),
+            new TasksTemplate(2, "Brachytherapy Checklist", new PatientTaskGroup("Brachytherapy Checklist", new List<IPatientTask> {
+                new PatientTaskDate {Label = "Plan Start"},
+                new PatientTaskText {Label = "Oncologist Review Parameters"},
+                new PatientTaskBool {Label = "Radiation Theraptists Consulted"},
+                new PatientTaskBool {Label = "Seed Size Comparison Reviewed"}
+            }))
+            
         };
 
         public async Task AddTaskTemplate(PatientTaskGroup group) {

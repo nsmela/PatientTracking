@@ -1,0 +1,42 @@
+﻿@switch (Editing) {
+    <!-- View Only: cannot change anything -->
+    default:
+        <MudPaper Class="d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true" 
+            >
+            <MudExpansionPanel Style="@($"background:{Colors.Purple.Darken3};")">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudText><strong>@(TaskItem.Label + ":")</strong></MudText>
+                        <MudText Class="mx-auto">@Calculate</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudText class="px-2 pt-1 d-inline-flex">Forumla: </MudText>
+                    <MudPaper Class="d-inline-flex mt-1 px-2 flex-grow-1" Height="18px" Square="true" Elevation="0">
+                        <MudTextField Typo="Typo.body2" Class="mt-n4" T="string" @bind-Text="TaskItem.Formula" ValueChanged="@OnValueChanged"
+                            Variant="Variant.Text" Margin="Margin.Dense" />
+                    </MudPaper>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudPaper>
+        break;
+    <!-- Data Entry Only: can change the value only -->
+    case EditMode.DataEntry:
+        <MudTextField T="string" @bind-Text="TaskItem.Formula" Variant="Variant.Text" FullWidth="true"
+              Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ValueChanged="@OnValueChanged" />
+        break;
+}
+<!-- Edit: can edit value and settings -->
+<!-- Maybe use a generic component? -->
+@code {
+    [Parameter] public PatientTaskCalculation TaskItem { get; set; }
+    [Parameter] public EditMode Editing { get; set; }
+    [Parameter] public EventCallback<PatientTaskCalculation> TaskChanged { get; set; }
+
+    string Calculate => TaskItem.Calculate();
+
+    async Task OnValueChanged() {
+        StateHasChanged();
+        await TaskChanged.InvokeAsync(TaskItem);
+    }
+}

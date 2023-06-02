@@ -6,7 +6,7 @@ namespace PatientTracking.Data.Patient {
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.CalendarMonth;
         public string Label { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
         public void SetValue(object value) {
             if (value is null) return;
             if (value.GetType() != typeof(DateTime)) return;

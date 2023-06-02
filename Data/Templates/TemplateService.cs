@@ -25,7 +25,7 @@ namespace PatientTracking.Data.Templates {
                 if (Type == typeof(bool)) return Icons.Material.Filled.CheckBox;
                 if (Type == typeof(string)) return Icons.Material.Filled.TextSnippet;
                 if (Type == typeof(List<string>)) return Icons.Material.Filled.List;
-                if (Type == typeof(DateTime)) return Icons.Material.Filled.CalendarMonth;
+                if (Type == typeof(DateTime?)) return Icons.Material.Filled.CalendarMonth;
                 if (Type == typeof(double)) return Icons.Material.Filled.Numbers;
                 if (Type == typeof(PatientTaskCalculation)) return Icons.Material.Filled.Calculate;
 

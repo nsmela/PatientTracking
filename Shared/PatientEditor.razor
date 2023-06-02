@@ -36,6 +36,7 @@
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> {task.Type = "Date"; task.Value = DateTime.Today;}) />
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> {task.Type = "List"; task.Value = new List<string>();}) />
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> {task.Type = "Number"; task.Value=0.0f;}) />
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Calculate" OnClick=@(()=> {task.Type = "Calculation"; task.Value = string.Empty;})></MudButton>
                                 </MudMenu>
                                 <MudTextField @bind-Value="task.Label" Placeholder="@task.Label" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                                 <MudSpacer />
@@ -66,6 +67,7 @@
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.CalendarMonth" OnClick=@(()=> group.NewTaskType = "Date")></MudButton>
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.List" OnClick=@(()=> group.NewTaskType = "List")></MudButton>
                                     <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Numbers" OnClick=@(()=> group.NewTaskType = "Number")></MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Filled.Calculate" OnClick=@(()=> group.NewTaskType = "Calculation")></MudButton>
                                 </MudMenu>
                                 <MudTextField @bind-Value="group.NewTaskName" Placeholder="New Task" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                             </MudToolBar>
@@ -130,6 +132,7 @@
         if (type == "Date") return Icons.Material.Filled.CalendarMonth;
         if (type == "List") return Icons.Material.Filled.List;
         if (type == "Number") return Icons.Material.Filled.Numbers;
+        if (type == "Calculation") return Icons.Material.Filled.Calculate;
         return Icons.Material.Filled.QuestionMark;
     }
 
@@ -165,7 +168,11 @@
                 } else if (t.GetType() == typeof(PatientTaskNumber)) {
                     var task = t as PatientTaskNumber;
                     group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Number", Value = task.Value });
+                } else if (t.GetType() == typeof(PatientTaskCalculation)) {
+                    var task = t as PatientTaskCalculation;
+                    group.Tasks.Add(new TaskItem { Label = task.Label, Type = "Calculation", Value = task.Formula });
                 }
+
             });
             groups.Add(group);
         });
@@ -246,7 +253,6 @@
     private async Task SavePatientData() {
         var taskGroups = new List<PatientTaskGroup>();
         groups.ForEach(g => {
-            var group = new PatientTaskGroup { Label = g.Name };
             var tasks = new List<IPatientTask>();
             g.Tasks.ForEach(t =>{
                 if (t.Type == "Checkbox") {
@@ -274,17 +280,18 @@
                     task.SetValue(t.Value);
                     tasks.Add(task);
                 }
+                else if (t.Type == "Calculation") {
+                    var task = new PatientTaskCalculation { Label = t.Label };
+                    task.SetValue(t.Value);
+                    tasks.Add(task);
+                }
             });
-            group.Tasks = tasks;
+            var group = new PatientTaskGroup(g.Name, tasks);
             taskGroups.Add(group);
         });
-        var patient = new Patient {
-                Id = id,
-                LastName = lastName,
-                FirstName = firstName,
-                StartDate = date,
-                TaskGroups = taskGroups
-            };
+
+        var patient = new Patient(id, lastName, firstName, taskGroups);
+        patient.StartDate = date;
 
         await patientService.UpdatePatient(patient);
         navManager.NavigateTo($"/patient/{PatientId}");
