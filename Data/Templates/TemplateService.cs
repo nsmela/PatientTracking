@@ -1,4 +1,5 @@
-﻿using PatientTracking.Data.Patient;
+﻿using MudBlazor;
+using PatientTracking.Data.Patient;
 
 namespace PatientTracking.Data.Templates {
     public class TaskItem {
@@ -17,6 +18,19 @@ namespace PatientTracking.Data.Templates {
             Type = copy.Type;
             Parent = copy.Parent;
             Value = copy.Value;
+        }
+
+        public string Icon {
+            get {
+                if (Type == typeof(bool)) return Icons.Material.Filled.CheckBox;
+                if (Type == typeof(string)) return Icons.Material.Filled.TextSnippet;
+                if (Type == typeof(List<string>)) return Icons.Material.Filled.List;
+                if (Type == typeof(DateTime)) return Icons.Material.Filled.CalendarMonth;
+                if (Type == typeof(double)) return Icons.Material.Filled.Numbers;
+                if (Type == typeof(PatientTaskCalculation)) return Icons.Material.Filled.Calculate;
+
+                return Icons.Material.Filled.QuestionMark;
+            }
         }
     }
 

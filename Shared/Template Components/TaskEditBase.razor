@@ -1,13 +1,13 @@
 ﻿@if (!Editing) {
     <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-        <MudIcon Icon="@Icons.Material.Filled.TextSnippet" Size="Size.Small" />
+        <MudIcon Icon="@Icon" Size="Size.Small" />
         <MudText Typo="Typo.body1" Class="pl-2">@Task.Label</MudText>
     </MudToolBar>
 }
 else {
     @if (Group.EditableTaskIndex == Group.Tasks.IndexOf(Task)) {
         <MudToolBar Row="true" Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-            <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
+            <MudIcon Icon="@Icon" Size="Size.Small" />
             <MudInput @bind-Value="Task.Label" Placeholder="@Task.Label" Margin="Margin.Normal" Class="mb-n2 mt-n2 pr-8n pl-1 pt-1"
               Variant="Variant.Filled" Immediate="false" TextChanged=@(()=> SubmitTaskEdit()) FullWidth="true" />
             <MudSpacer />
@@ -17,7 +17,18 @@ else {
     }
     else {
         <MudToolBar Class="pa-2 ma-1" DisableGutters="true" Style="@($"background:{Colors.BlueGrey.Darken3};")">
-            <MudIcon Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" />
+            <MudMenu Dense="true">
+                <ActivatorContent>
+                    <MudChip Icon="@Icon" Size="Size.Small" Color="Color.Primary" />
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Icon="@Icons.Material.Filled.CheckBox" Size="Size.Small" OnClick="@(()=> SelectType(0))">Checkbox</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.TextSnippet" Size="Size.Small" OnClick="@(()=> SelectType(1))">Text</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.List" Size="Size.Small" OnClick="@(()=> SelectType(2))">Dropbox</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" OnClick="@(()=> SelectType(3))">Date</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.Numbers" Size="Size.Small" OnClick="@(()=> SelectType(4))">Number</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
             <MudText Typo="Typo.body1" Class="pl-2">@Task.Label</MudText>
             <MudSpacer />
             <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Small" OnClick="(() => IncrementTask())" />
@@ -28,14 +39,27 @@ else {
     }
 }
 @code {
-    [Parameter] public TaskGroup Group { get; set; }
     [Parameter] public TaskItem Task { get; set; }
     [Parameter] public bool Editing { get; set; } = false;
     [Parameter] public EventCallback<TaskGroup> GroupChanged { get; set; }
 
     bool editMode = false; //used to prevent the text field from exiting immediately when using TextChanged event handler
 
+    string Icon => Task.Icon;
+    TaskGroup Group { get => Task.Parent; set => Task.Parent = value; }
+
     #region Button Functions
+
+    async Task SelectType(int index){
+        if (index == 0) Task.Type = typeof(bool);
+        if (index == 1) Task.Type = typeof(string);
+        if (index == 2) Task.Type = typeof(List<string>);
+        if (index == 3) Task.Type = typeof(DateTime?);
+        if (index == 4) Task.Type = typeof(double);
+
+        await GroupChanged.InvokeAsync(Group);
+    }
+
 
     async Task IncrementTask() {
         int index = Group.Tasks.IndexOf(Task);
@@ -46,7 +70,7 @@ else {
 
         Group.EditableTaskIndex = -1;
 
-        await GroupChanged.InvokeAsync(Group);
+        await GroupChanged.InvokeAsync(Group); //is this needed?
     }
 
     async Task DecrementTask() {

@@ -3,6 +3,7 @@
 namespace PatientTracking.Data.Patient {
     public class PatientTaskText : IPatientTask {
         public object Type => typeof(string);
+        public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
         public string Text { get; set; }

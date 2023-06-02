@@ -58,7 +58,7 @@
 
     <!-- Tasks -->
     @foreach (var task in Group.Tasks) {
-        <TemplateTaskItem Group="@Group" Task="@task" GroupChanged="@OnGroupUpdated" Editing="@EditTasks" />
+        <TaskEditBase Task="@task" Editing="Edit" GroupChanged="@OnGroupUpdated" />
     }
     @if(Editing == EditMode.UnlinkedEdit){
         if(newTaskOpen){
