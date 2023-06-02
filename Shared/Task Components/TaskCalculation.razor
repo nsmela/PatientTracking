@@ -21,13 +21,10 @@
         </MudPaper>
         break;
     <!-- Data Entry Only: can change the value only -->
-    case EditMode.DataEntry:
-        <MudTextField T="string" @bind-Text="TaskItem.Formula" Variant="Variant.Text" FullWidth="true"
-              Adornment="Adornment.Start" AdornmentText="@TaskItem.Label" AdornmentColor="Color.Info" ValueChanged="@OnValueChanged" />
-        break;
+    <!-- Edit: can edit value and settings -->
+    <!-- Maybe use a generic component? -->
+
 }
-<!-- Edit: can edit value and settings -->
-<!-- Maybe use a generic component? -->
 @code {
     [Parameter] public PatientTaskCalculation TaskItem { get; set; }
     [Parameter] public EditMode Editing { get; set; }
