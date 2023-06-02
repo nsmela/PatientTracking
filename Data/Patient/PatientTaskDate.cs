@@ -3,6 +3,7 @@
 namespace PatientTracking.Data.Patient {
     public class PatientTaskDate : IPatientTask {
         public object Type => typeof(DateTime);
+        public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.CalendarMonth;
         public string Label { get; set; }
         public DateTime Date { get; set; }

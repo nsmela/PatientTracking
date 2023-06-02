@@ -3,6 +3,7 @@ else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(
 else if (TaskItem.GetType() == typeof(PatientTaskDate)) { <TaskDate TaskItem="@(TaskItem as PatientTaskDate)" Editing="@Edit"/> }
 else if (TaskItem.GetType() == typeof(PatientTaskNumber)) { <TaskNumber TaskItem="@(TaskItem as PatientTaskNumber)" Editing="@Edit"/> }
 else if (TaskItem.GetType() == typeof(PatientTaskList)) { <TaskList TaskItem="@(TaskItem as PatientTaskList)" Editing="@Edit"/> }
+
 @code {
     [Parameter] public IPatientTask TaskItem { get; set; }
     [Parameter] public EditMode Edit { get; set; } = EditMode.View;

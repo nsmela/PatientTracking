@@ -4,6 +4,7 @@ using System.Data;
 namespace PatientTracking.Data.Patient {
     public class PatientTaskCalculation : IPatientTask {
         public object Type => typeof(double);
+        public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
         public string Formula { get; set; }

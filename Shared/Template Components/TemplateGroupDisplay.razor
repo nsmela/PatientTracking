@@ -39,7 +39,7 @@
 
     <!-- Tasks -->
     @foreach (var task in newGroup.Tasks) {
-        <TemplateTaskItem Group="@newGroup" Task="@task" GroupChanged="@OnGroupUpdated" Editing="@Editing" />
+        <TaskEditBase Task="@task" GroupChanged="@OnGroupUpdated" Editing="@Editing" />
     }
     @if (Editing) {
         if (newTaskOpen) {
