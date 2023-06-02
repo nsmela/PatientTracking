@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="@IcyGradient" />
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
@@ -26,7 +26,14 @@
     bool _drawerOpen = true;
     bool _isDarkMode = true;
 
-    MudTheme _theme = new();
+    MudTheme IcyGradient = new MudTheme {
+        PaletteDark = new PaletteDark(){
+                Primary = "#2C74B3",
+                Secondary = "#205295",
+                Tertiary = "#144272"
+        }
+    };
+
 
     void DrawerToggle() {
         _drawerOpen = !_drawerOpen;

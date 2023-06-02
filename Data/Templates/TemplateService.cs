@@ -125,7 +125,7 @@ namespace PatientTracking.Data.Templates {
             _groupTemplates.Add(new TaskGroup("Brachytherapy", new List<TaskItem> {
                 new TaskItem("Assigned to: ", typeof(string)),
                 new TaskItem("Seed Supply Checked", typeof(bool)),
-                new TaskItem("Seed Exchange", typeof(DateTime))
+                new TaskItem("Seed Exchange", typeof(DateTime?))
             }));
 
             _templates = new List<TemplateItem>();
