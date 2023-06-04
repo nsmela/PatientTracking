@@ -19,12 +19,12 @@ else{
 
         @foreach (var group in Patient.TaskGroups) {
             <!-- Task Group -->
-            <MudGrid Class="mud-theme-tertiary pa-1 mt-2" Spacing="1" Justify="Justify.FlexStart" >
+            <MudGrid Class="mud-theme-tertiary pa-1 mt-2 d-flex flex-column flex-1" Spacing="1" >
                 <MudItem>
                     <MudText>@group.Label</MudText>
                 </MudItem>
                 @foreach (var result in group.Tasks) {
-                    <MudItem xs="12" Class="mt-1 pa-1" Style="height:22px">
+                    <MudItem xs="12" Class="mt-0 pa-0" Style="max-height:22px">
                         <PatientTask TaskItem="@result" />
                     </MudItem>
                 }

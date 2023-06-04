@@ -2,16 +2,9 @@
     @switch (Editing) {
         <!-- List View: cannot change anything -->
         default:
-            <MudPaper Class="mud-theme-secondary d-flex flex-nowrap flex-auto mt-1" Outlined="true">
-                <MudText class="mx-2 pt-1 d-inline-flex">@TaskItem.Label</MudText>
-                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2 object-fill flex-auto" Height="18px" Square="true" Elevation="0">
-                    <MudSelect Class="mt-n5" T="string" DisableUnderLine="true" ValueChanged="(value) => OnValueChanged(value)" Value="@GetSelectedOption()">
-                        @foreach(var option in TaskItem.Options){
-                            int index = TaskItem.Options.IndexOf(option);
-                            <MudSelectItem Value="@option">@option</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudPaper>
+            <MudPaper MaxHeight="22px" Class="mx-n7 pl-1 d-flex flex-grow-1 justify-space-between">
+                <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px"><b>@TaskItem.Label</b></MudText>
+                <MudText Class="mr-1 d-inline-flex" Typo="Typo.body2" Style="height:18px;">@GetSelectedOption()</MudText>
             </MudPaper>
             break;
         <!-- Data Entry Only: can change the value only -->
@@ -41,7 +34,7 @@
     [Parameter] public EventCallback<PatientTaskList> GroupChanged { get; set; }
 
     string GetSelectedOption()=> TaskItem.Options[TaskItem.SelectedOption];
-
+    
     async Task OnValueChanged(string value) {
         TaskItem.SelectedOption = TaskItem.Options.IndexOf(value);
         await GroupChanged.InvokeAsync(TaskItem);
