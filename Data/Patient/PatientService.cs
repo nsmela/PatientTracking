@@ -6,7 +6,9 @@ namespace PatientTracking.Data.Patient {
             new Patient("001", "Alexander", "Trebek", new List<PatientTaskGroup> {
                     new PatientTaskGroup("Standard", new List<IPatientTask> { 
                             new PatientTaskDate{Label = "Due Date:", Date=DateTime.Today.AddDays(1)},
-                            new PatientTaskBool{Label = "Requisition", Checked = true}, 
+                            new PatientTaskBool{Label = "Requisition", Checked = true},
+                            new PatientTaskBool{Label = "Approved", Checked = false},
+                            new PatientTaskBool{Label = "New", Checked = true},
                             new PatientTaskText { Label = "Site", Text = "Lungs" },
                             new PatientTaskNumber {Label = "Site Volume:", Value=1.023f},
                             new PatientTaskList {Label = "Progress Status", SelectedOption=0, Options = new List<string>{"Admitted", "Onc Review Complete", "Phys Review Complete", "Ready for treatment"}}

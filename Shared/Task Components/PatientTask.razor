@@ -1,5 +1,23 @@
-﻿@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" Editing="@Edit"/>}
-else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" Editing="@Edit"/> }
+﻿<!-- 
+Possible View Modes:
+    Quick View (only read)
+    Patient Overview (read and write patient info)
+    Modify (change task setting, shared with templates)
+
+Task Info Needed
+    Label
+    Value (bool, string, list, double, etc)
+    Parent (Group it belongs to)
+    Patient (to update the value w/o sending the whole patient info over the network)
+    (only for patient data to be saved)
+
+    ViewMode  (Quick View, Patient Data Entry, Modify Task)
+    Edit History (datetime, user)
+    Comment/Notes for the task (set comment)
+-->
+
+@if (TaskItem.GetType() == typeof(PatientTaskText)) {<TaskText TaskItem="@(TaskItem as PatientTaskText)" Editing="@Edit"/>}
+else if (TaskItem.GetType() == typeof(PatientTaskBool)) { <TaskBool TaskItem="@(TaskItem as PatientTaskBool)" Editing="@Edit" /> }
 else if (TaskItem.GetType() == typeof(PatientTaskDate)) { <TaskDate TaskItem="@(TaskItem as PatientTaskDate)" Editing="@Edit"/> }
 else if (TaskItem.GetType() == typeof(PatientTaskNumber)) { <TaskNumber TaskItem="@(TaskItem as PatientTaskNumber)" Editing="@Edit"/> }
 else if (TaskItem.GetType() == typeof(PatientTaskList)) { <TaskList TaskItem="@(TaskItem as PatientTaskList)" Editing="@Edit"/> }

@@ -2,11 +2,10 @@
     @switch (Editing) {
         <!-- List View: cannot change anything -->
         default:
-            <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true">
-                <MudText class="mx-2 pt-1 d-inline-flex flex-grow-1">@TaskItem.Label</MudText>
-                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2" Height="18px" Square="true" Elevation="0">
-                    <MudCheckBox Class="d-inline-flex mt-n3 mr-n4" Size="Size.Small" Checked="@TaskItem.Checked" T="bool" CheckedChanged="(value) => OnValueChanged(value)" />
-                </MudPaper>
+            <MudPaper MaxHeight="22px" Class="mx-n7 pl-1 d-flex flex-grow-1 justify-space-between">
+                <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px">@TaskItem.Label </MudText>
+                <MudCheckBox Class="mt-n4 mr-n2 d-inline-flex" Checked="@TaskItem.Checked" 
+                    ReadOnly="true" LabelPosition="LabelPosition.Start" T="bool" Style="height:18px;" />
             </MudPaper>
             break;
         <!-- Data Entry Only: can change the value only -->
