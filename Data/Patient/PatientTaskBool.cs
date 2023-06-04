@@ -6,6 +6,7 @@ namespace PatientTracking.Data.Patient {
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.CheckBox;
         public string Label { get; set; }
+        public string ToString() => Checked ? "Checked" : "Pending";
         public bool Checked { get; set; } = false;
         public void SetValue(object value) {
             if (value is null) return;

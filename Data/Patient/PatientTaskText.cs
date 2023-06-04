@@ -7,6 +7,7 @@ namespace PatientTracking.Data.Patient {
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
         public string Text { get; set; } = string.Empty;
+        public string ToString() => Text;
 
         public void SetValue(object value) {
             if (value is null) return;

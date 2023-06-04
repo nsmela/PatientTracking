@@ -14,6 +14,8 @@ namespace PatientTracking.Data.Patient {
             Formula = (string)value;
         }
 
+        public string ToString() => Calculate().ToString();
+
         //subscribes to OnValueChanged on referenced number tasks 
 
         //convert string into a formula using DataTable

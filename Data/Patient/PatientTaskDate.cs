@@ -7,6 +7,7 @@ namespace PatientTracking.Data.Patient {
         public string Icon => Icons.Material.Filled.CalendarMonth;
         public string Label { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
+        public string ToString() => Date.ToShortDateString();
         public void SetValue(object value) {
             if (value is null) return;
             if (value.GetType() != typeof(DateTime)) return;
