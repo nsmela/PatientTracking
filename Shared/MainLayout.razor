@@ -5,13 +5,21 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudDrawer Open="true" Elevation="2">
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText>RADIGATE</MudText>
+        <MudSpacer />
+        <MudText>Welcome, USERNAME</MudText>
+        <MudAvatar Class="ml-2" Color="Color.Tertiary">U</MudAvatar>
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5" Class="mt-1">RADIGATE</MudText>
+            <MudPaper Height="120px" Class="Color.Inherit" />
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Class="mt-n16">
+    <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
@@ -19,6 +27,13 @@
 
 @code {
     bool _isDarkMode = true;
+
+    bool _drawerOpen = true;
+
+    void DrawerToggle() {
+        _drawerOpen = !_drawerOpen;
+    }
+
 
     MudTheme IcyGradient = new MudTheme {
         PaletteDark = new PaletteDark(){

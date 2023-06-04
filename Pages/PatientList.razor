@@ -6,6 +6,15 @@
 @if(patients == null){
     <p><em>Loading patients... </em></p>
 }else {
+    <!-- Add Patient and Search Bar -->
+    <div>
+        <MudPaper Class="mud-theme-primary d-flex pa-1" MaxWidth="480">
+            <MudButton Class="d-inline-flex" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" Variant="Variant.Outlined">Add Patient</MudButton>
+            <MudTextField Class="d-inline-flex px-1" T="string" Label="Search" Variant="Variant.Outlined"
+                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" FullWidth="true" />
+        </MudPaper>
+    </div>
+    <!-- List of Patients -->
     <MudStack Row="true" Class="pa-2 overflow-x-scroll">
         @foreach(var patient in patients) {
             <PatientOverview Patient=@patient />

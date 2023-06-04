@@ -5,15 +5,15 @@
     <p><em>Loading patient...</em></p>
 } 
 else{
-    <MudPaper Class="mud-theme-primary pa-1 mb-2 ma-1 rounded-t-xl" Width="360px">
+    <MudPaper Class="mud-theme-primary pa-1 mb-2 ma-1" Width="360px">
         <!-- Header -->
-        <MudExpansionPanel Class="mud-theme-primary">
+        <MudExpansionPanel Class="mud-theme-primary" Dense="true" DisableGutters="true">
             <TitleContent>
-                <MudToolBar  >
+                <MudToolBar Dense=true DisableGutters=true>
                     <MudText>@Name.ToUpper()</MudText>
                     <MudSpacer />
-                    <MudIconButton Icon="@Icons.Material.Filled.Preview" Size="Size.Small" />
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" OnClick="@EditPatient">
+                    <MudIconButton Icon="@Icons.Material.Filled.Preview" Size="Size.Small" OnClick="@(() => EditPatient())" />
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" >
                         <MudMenuItem Icon="@Icons.Material.Filled.ModeEdit">Edit Tasks</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.Archive">Archive Patient</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.RemoveCircleOutline">Remove Patient</MudMenuItem>
@@ -22,13 +22,13 @@ else{
                 </MudToolBar>
             </TitleContent>
             <ChildContent>
-                <MudPaper Class="mud-theme-primary ma-n1 pl-1" Square="true" Elevation="0">
-                    <MudText><b>Patient ID:</b> @Id</MudText>
-                    <MudText class="pl-2 pt-1 d-inline-flex flex-grow-1">@Date</MudText>
+                <MudPaper Class="mud-theme-primary ma-n1 pl-1" Square="true" Elevation="0" Outlined="true">
+                    <MudText ><b>Patient ID:</b> @Id</MudText>
+                    <MudText ><b>Start Date: </b>@Date</MudText>
                 </MudPaper>
             </ChildContent>
         </MudExpansionPanel>
-
+        
         @foreach (var group in Patient.TaskGroups) {
             <!-- Task Group -->
             <MudGrid Class="mud-theme-tertiary pa-1 mt-2 d-flex flex-column" Spacing="1" >
