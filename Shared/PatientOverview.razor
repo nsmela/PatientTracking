@@ -24,7 +24,7 @@ else{
                     <MudText>@group.Label</MudText>
                 </MudItem>
                 @foreach (var result in group.Tasks) {
-                    <MudItem xs="12" Class="mt-0 pa-0" Style="max-height:22px">
+                    <MudItem xs="12" Class="mt-0 pa-1" Style="height:22px">
                         <PatientTask TaskItem="@result" />
                     </MudItem>
                 }

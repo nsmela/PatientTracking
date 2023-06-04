@@ -2,8 +2,8 @@
     <!-- View Only: cannot change anything -->
     default:
         <MudPaper MaxHeight="22px" Class="mx-n1 pl-1 d-flex flex-grow-1 justify-space-between">
-            <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px"><b>@TaskItem.Label</b></MudText>
-            <MudText Class="mr-1 d-inline-flex" Typo="Typo.body2" Style="height:18px;">@TaskItem.Value.ToString("0.00")</MudText>
+            <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px">@TaskItem.Label </MudText>
+            <MudText Class="mr-1 d-inline-flex" Style="height:18px;">@TaskItem.Value.ToString("0.00")</MudText>
         </MudPaper>
         break;
     <!-- Data Entry Only: can change the value only -->
