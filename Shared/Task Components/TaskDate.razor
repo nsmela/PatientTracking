@@ -2,13 +2,9 @@
     @switch (Editing) {
         <!-- List View: cannot change anything -->
         default:
-            <MudPaper Class="mud-theme-secondary d-flex flex-nowrap align-content-end flex-grow-1 mt-1" Outlined="true">
-                <MudText class="mx-2 pt-1 d-inline-flex">@TaskItem.Label</MudText>
-                <MudPaper Class="mud-theme-secondary d-inline-flex mt-1 px-2 flex-grow-1" Height="18px" Width="30%" Square="true" Elevation="0">
-                    <MudTextField Typo="Typo.body2" Class="mt-n4" T="string" DisableUnderLine="true"
-                          Variant="Variant.Text" Margin="Margin.Dense" Text="@TaskItem.Date.ToString()" />
-                    <MudIconButton IconSize="Size.Small" Icon="@Icons.Material.Filled.CalendarMonth" />
-                </MudPaper>
+            <MudPaper MaxHeight="22px" Class="mx-n7 pl-1 d-flex flex-grow-1 justify-space-between">
+                <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px">@TaskItem.Label </MudText>
+                <MudText Class="mr-1 d-inline-flex" Style="height:18px;" Typo="Typo.body2">@TaskItem.Date.ToShortDateString()</MudText>
             </MudPaper>
             break;
         <!-- Data Entry Only: can change the value only -->
