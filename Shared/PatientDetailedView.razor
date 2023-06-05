@@ -18,7 +18,17 @@
         <MudPaper Class="d-flex ma-2 pa-2 flex-column" Elevation="2" >
             <MudText class="d-flex" Typo="Typo.h6">@group.Label</MudText>
             @foreach (var task in group.Tasks) {
-                <PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />
+                <!--<PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />-->
+                @switch(task.Type){
+                    case typeof(bool):
+                        <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
+                            <MudText Class="d-inline-flex align-self-center pl-2">Task Item</MudText>
+                            <MudCheckBox T="bool"/>
+                        </MudPaper>
+                        break;
+                }
+
+
             }
         </MudPaper>
     }
