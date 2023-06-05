@@ -17,46 +17,101 @@
     @foreach (var group in patient.TaskGroups) {
         <MudPaper Class="d-flex ma-2 pa-2 flex-column" Elevation="2" >
             <MudText class="d-flex" Typo="Typo.h6">@group.Label</MudText>
-            @foreach (var task in group.Tasks) {
-                <!--<PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />-->
-                @switch(task.Type){
-                    case TaskType.Checkbox:
-                        <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
-                            <MudText Class="d-inline-flex align-self-center pl-2">@task.Label</MudText>
-                            <MudCheckBox T="bool"/>
-                    </MudPaper>
-                    break;
-                case TaskType.Text:
-                    var result = task as PatientTaskText;
-                    <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
-                            <MudText Class="d-inline-flex align-self-center px-2">@result.Label</MudText>
-                            <MudTextField Class="d-inline-flex align-self-center px-2"
-                                Style="text-align:right;padding-bottom:16px;height:24px;"
-                                Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
-                                T="string" @bind-Value="result.Text" />
-                        </MudPaper>
-                        break;
-                    case TaskType.Number:
-                        var result = task as PatientTaskNumber;
-                        break;
-                    default:
-                    <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
-                        <MudText Class="d-inline-flex align-self-center px-2">Task Item</MudText>
-                        <MudText Class="d-inline-flex align-self-center px-2" T="string">NOT DEFINED</MudText>
-                    </MudPaper>
-                    break;
-                }
-            }
+            <div style="max-width: 330px;">
+                <MudExpansionPanels DisableBorders="true" Dense="true">
+                    @foreach (var task in group.Tasks) {
+                        <!--<PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />-->
+                        @switch(task.Type){
+                            <!-- CheckBox FIELD -->
+                            case TaskType.Checkbox:
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
+                                    <MudText Class="d-inline-flex align-self-center pl-2">@task.Label</MudText>
+                                    <MudCheckBox T="bool"/>
+                                </MudPaper>
+                                break;
+                            <!-- TEXT FIELD -->
+                            case TaskType.Text:
+                                var result = task as PatientTaskText;
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
+                                        <MudText Class="d-inline-flex align-self-center px-2">@result.Label</MudText>
+                                        <MudTextField Class="d-inline-flex align-self-center px-2 text-align-right"
+                                            Style="margin-left:auto;padding-bottom:16px;height:24px;"
+                                            Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
+                                            T="string" @bind-Value="result.Text" />
+                                </MudPaper>
+                                break;
+                            <!-- FORMULA FIELD -->
+                            case TaskType.Number:
+                                var number = task as PatientTaskNumber;
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" >
+                                    <MudText Class="d-inline-flex align-self-center pl-2">@number.Label</MudText>
+                                        <MudNumericField Class="d-inline-flex align-self-center px-2 text-align-right"
+                                     Style="text-align:right;padding-bottom:16px;height:24px;"
+                                     Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense" 
+                                     T="double" HideSpinButtons="true" Value="@number.Value" />
+                                </MudPaper>
+                                break;
+                            case TaskType.Formula:
+                                var formula = task as PatientTaskCalculation;
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
+                                        <MudText Class="d-inline-flex align-self-center px-2">@formula.Label</MudText>
+                                        <MudTextField Class="d-inline-flex align-self-center px-2"
+                                            Style="text-align:right;padding-bottom:16px;height:24px;"
+                                            Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
+                                            T="string" @bind-Value="formula.Formula" />
+                                </MudPaper>
+                                <!-- TODO: Add expansion panel to allow editing the values -->
+                                break;
+                            <!-- DATE FIELD -->
+                            case TaskType.Date:
+                                var date = task as PatientTaskDate;
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
+                                        <MudText Class="d-inline-flex flex-grow-1 align-self-center px-2 ">@date.Label</MudText>
+                                        <MudDatePicker Class="d-inline-flex align-self-center px-2 text-align-right" Date="@date.Date" AutoClose="true"
+                                            Style="padding-bottom:12px;height:36px;width:200px" Margin="Margin.Dense" Variant="Variant.Filled"
+                                            T="DateTime?"  />
+                                </MudPaper>
+                                break;
+                            <!-- List FIELD -->
+                            case TaskType.List:
+                                var list = task as PatientTaskList;
+                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
+                                    <MudText Class="d-inline-flex flex-grow-1 align-self-center px-2" T="string">@list.Label</MudText>
+                                    <MudSelect T="string" Class="d-inline-flex flex-grow-1 align-self-center px-2 ">
+                                        @foreach(var option in list.Options){
+                                            <MudSelectItem Value="@(option)">@option</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudPaper>
+                                break;
+                            <!-- UNDEFINED -->
+                            default:
+                                <MudExpansionPanel Class="mt-2" HideIcon="true" Dense="true" >
+                                    <TitleContent>
+                                            <MudPaper Class="d-flex justify-content-between ma-0" Outlined="true" >
+                                                <MudText Class="d-inline-flex align-self-center pl-2">@task.Label</MudText>
+                                                <MudCheckBox T="bool" />
+                                            </MudPaper>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudPaper Class="d-flex flex-column align-items-stretch pa-1">
+                                            <MudText>Last Edit: 01-JAN-2023</MudText>
+                                            <MudTextField T="string" Variant="Variant.Outlined" Label="Comments" Lines="5"></MudTextField>
+                                        </MudPaper>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            break;
+                        }
+                    }
+                </MudExpansionPanels>
+            </div>
         </MudPaper>
     }
 
 </MudContainer>
 
 <style>
-    .custom-text {
-        display: inline-block;
-    }
-    .custom-text input{
+    .text-align-right input{
         text-align: right;
     }
 </style>
