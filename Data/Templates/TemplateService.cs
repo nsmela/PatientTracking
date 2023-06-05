@@ -115,7 +115,7 @@ namespace PatientTracking.Data.Templates {
             }));
 
             _groupTemplates.Add(new TaskGroup("Physics Planning", new List<TaskItem> {
-                new TaskItem("Due By:", typeof(DateTime)),
+                new TaskItem("Due By:", typeof(DateTime?)),
                 new TaskItem("Assigned to: ", typeof(string)),
                 new TaskItem("Dry run complete", typeof(bool)),
                 new TaskItem("VMAT QA", typeof(bool)),
