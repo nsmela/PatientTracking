@@ -1,5 +1,4 @@
-﻿@inject PatientService patientService
-@inject NavigationManager navigationManager
+﻿
 
 @if(Patient == null){
     <p><em>Loading patient...</em></p>
@@ -14,17 +13,16 @@ else{
                     <MudSpacer />
                     <MudIconButton Icon="@Icons.Material.Filled.Preview" Size="Size.Small" OnClick="@(() => EditPatient())" />
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" >
-                        <MudMenuItem Icon="@Icons.Material.Filled.ModeEdit">Edit Tasks</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Filled.ModeEdit" OnClick="@(() => ModifyPatient())">Edit Tasks</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.Archive">Archive Patient</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.RemoveCircleOutline">Remove Patient</MudMenuItem>
                     </MudMenu>
-
                 </MudToolBar>
             </TitleContent>
             <ChildContent>
                 <MudPaper Class="mud-theme-primary ma-n1 pl-1" Square="true" Elevation="0" Outlined="true">
-                    <MudText ><b>Patient ID:</b> @Id</MudText>
-                    <MudText ><b>Start Date: </b>@Date</MudText>
+                    <MudText ><b>Patient ID:</b> @Patient.Id</MudText>
+                    <MudText ><b>Start Date: </b>@Patient.StartDate.Value.ToLongDateString()</MudText>
                 </MudPaper>
             </ChildContent>
         </MudExpansionPanel>
@@ -36,7 +34,7 @@ else{
                     <MudText>@group.Label</MudText>
                 </MudItem>
                 @foreach (var result in group.Tasks) {
-                    <MudPaper MaxHeight="22px" Class="mud-theme-secondary mx-n1 pl-1 mt-1 d-flex flex-grow-1 justify-space-between">
+                    <MudPaper MaxHeight="22px" Class="mud-theme-secondary mx-1 pl-1 mt-1 d-flex flex-grow-1 justify-space-between">
                         <MudText Class="d-inline-flex flex-grow-1" Typo="Typo.body2" Style="height:18px"><b>@result.Label</b></MudText>
                         @if (result.Type == typeof(bool)) {
                             var task = result as PatientTaskBool;
@@ -54,14 +52,11 @@ else{
 }
 
 @code {
-    [Parameter]
-    public Patient? Patient { get; set; }
+    [Inject] private PatientService patientService { get; set; }
+    [Inject] private NavigationManager navigationManager { get; set; }
+
+    [Parameter] public Patient? Patient { get; set; }
     string Name => Patient.LastName + ", " + Patient.FirstName;
-    string Id => Patient.Id;
-    string Date => $" {Patient.StartDate.Value.Year} {months[Patient.StartDate.Value.Month]} {Patient.StartDate.Value.Day.ToString("00")}";
-    int status => (int)Patient.Status;
-    string[] months = new string[] { "N/A", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
-    string[] labels = new string[] { "Newly Added", "Assigned", "Treatment Ready", "In Treatment", "Treatment Complete", "Retired" };
 
     private async Task UpdatePatientTask(string groupLabel, string label, object value){
         int groupIndex = Patient.TaskGroups.FindIndex(g => g.Label == groupLabel);
@@ -72,7 +67,7 @@ else{
         }
     }
 
-    private void EditPatient(){
-        navigationManager.NavigateTo($"patient/{Patient.Id}");
-    }
+    private void EditPatient() => navigationManager.NavigateTo($"patient/{Patient.Id}");
+    private async Task ModifyPatient() => navigationManager.NavigateTo($"editpatient/{Patient.Id}");
+
 }

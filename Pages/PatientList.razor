@@ -2,14 +2,13 @@
 
 @inject PatientService patientService
 
-<h3>Active Patient Listings</h3>
 @if(patients == null){
     <p><em>Loading patients... </em></p>
 }else {
     <!-- Add Patient and Search Bar -->
     <div>
-        <MudPaper Class="mud-theme-primary d-flex pa-1" MaxWidth="480">
-            <MudButton Class="d-inline-flex" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" Variant="Variant.Outlined">Add Patient</MudButton>
+        <MudPaper Class="mud-theme-primary d-flex pa-1 ma-1" MaxWidth="480">
+            <MudButton Class="d-inline-flex" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" Variant="Variant.Outlined" OnClick="AddPatient">Add Patient</MudButton>
             <MudTextField Class="d-inline-flex px-1" T="string" Label="Search" Variant="Variant.Outlined"
                 Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" FullWidth="true" />
         </MudPaper>
@@ -24,8 +23,11 @@
 
 @code {
     private Patient[]? patients;
+    [Inject] private NavigationManager navigationManager { get; set; }
 
     protected override async Task OnInitializedAsync() {
         patients = await patientService.GetPatientsAsync();
     }
+
+    private async Task AddPatient() => navigationManager.NavigateTo($"newpatient");
 }
