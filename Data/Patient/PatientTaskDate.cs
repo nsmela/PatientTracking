@@ -2,7 +2,10 @@
 
 namespace PatientTracking.Data.Patient {
     public class PatientTaskDate : IPatientTask {
-        public object Type => typeof(DateTime);
+        TaskType IPatientTask.Type => TaskType.Date;
+        public DateTime? LastestCommentDate { get; set; }
+        public string Comments { get; set; }
+
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.CalendarMonth;
         public string Label { get; set; }

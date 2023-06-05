@@ -20,20 +20,46 @@
             @foreach (var task in group.Tasks) {
                 <!--<PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />-->
                 @switch(task.Type){
-                    case typeof(bool):
+                    case TaskType.Checkbox:
                         <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
-                            <MudText Class="d-inline-flex align-self-center pl-2">Task Item</MudText>
+                            <MudText Class="d-inline-flex align-self-center pl-2">@task.Label</MudText>
                             <MudCheckBox T="bool"/>
+                    </MudPaper>
+                    break;
+                case TaskType.Text:
+                    var result = task as PatientTaskText;
+                    <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
+                            <MudText Class="d-inline-flex align-self-center px-2">@result.Label</MudText>
+                            <MudTextField Class="d-inline-flex align-self-center px-2"
+                                Style="text-align:right;padding-bottom:16px;height:24px;"
+                                Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
+                                T="string" @bind-Value="result.Text" />
                         </MudPaper>
                         break;
+                    case TaskType.Number:
+                        var result = task as PatientTaskNumber;
+                        break;
+                    default:
+                    <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true" MinWidth="360px">
+                        <MudText Class="d-inline-flex align-self-center px-2">Task Item</MudText>
+                        <MudText Class="d-inline-flex align-self-center px-2" T="string">NOT DEFINED</MudText>
+                    </MudPaper>
+                    break;
                 }
-
-
             }
         </MudPaper>
     }
 
 </MudContainer>
+
+<style>
+    .custom-text {
+        display: inline-block;
+    }
+    .custom-text input{
+        text-align: right;
+    }
+</style>
 
 
 

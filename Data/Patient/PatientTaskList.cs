@@ -2,7 +2,10 @@
 
 namespace PatientTracking.Data.Patient {
     public class PatientTaskList : IPatientTask {
-        public object Type => typeof(List<string>);
+        TaskType IPatientTask.Type => TaskType.List;
+        public DateTime? LastestCommentDate { get; set; }
+        public string Comments { get; set; }
+
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.List;
         public string Label { get; set; }

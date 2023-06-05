@@ -36,7 +36,7 @@ else{
                 @foreach (var result in group.Tasks) {
                     <MudPaper MaxHeight="22px" Class="mud-theme-secondary mx-1 pl-1 mt-1 d-flex flex-grow-1 justify-space-between">
                         <MudText Class="d-inline-flex flex-grow-1" Typo="Typo.body2" Style="height:18px"><b>@result.Label</b></MudText>
-                        @if (result.Type == typeof(bool)) {
+                        @if (result.Type == TaskType.Checkbox) {
                             var task = result as PatientTaskBool;
                             <MudCheckBox Class="mt-n4 mr-n2 d-inline-flex" Checked="@task.Checked" ReadOnly="true" LabelPosition="LabelPosition.Start" T="bool" Style="height:18px;" />
                         }

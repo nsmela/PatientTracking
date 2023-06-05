@@ -2,7 +2,10 @@
 
 namespace PatientTracking.Data.Patient {
     public class PatientTaskText : IPatientTask {
-        public object Type => typeof(string);
+        TaskType IPatientTask.Type => TaskType.Text;
+        public DateTime? LastestCommentDate { get; set; }
+        public string Comments { get; set; }
+
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }

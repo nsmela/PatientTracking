@@ -3,11 +3,15 @@ using System.Data;
 
 namespace PatientTracking.Data.Patient {
     public class PatientTaskCalculation : IPatientTask {
-        public object Type => typeof(double);
         public PatientTaskGroup Parent { get; set; }
         public string Icon => Icons.Material.Filled.TextSnippet;
         public string Label { get; set; }
         public string Formula { get; set; } = string.Empty;
+
+        TaskType IPatientTask.Type => TaskType.Formula;
+        public DateTime? LastestCommentDate { get; set; }
+        public string Comments { get; set; }
+
         public void SetValue(object value) {
             if (value is null) return;
             if (value.GetType() != typeof(string)) return;

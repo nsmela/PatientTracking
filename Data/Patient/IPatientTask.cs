@@ -2,7 +2,7 @@
 namespace PatientTracking.Data.Patient {
     public interface IPatientTask {
         public abstract string Label { get; set; }
-        public abstract object Type { get; }
+        public abstract TaskType Type { get; }
         public abstract PatientTaskGroup Parent { get; set; }
         public abstract void SetValue(Object value);
         public abstract string ToString();
@@ -11,7 +11,10 @@ namespace PatientTracking.Data.Patient {
         //date, type, value
 
         //section for comments
+        public DateTime? LastestCommentDate { get; set; }
+        public string Comments { get; set; }
     }
 
+    public enum TaskType { Checkbox, Text, Number, Date, List, Formula };
 
 }
