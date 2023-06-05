@@ -4,7 +4,7 @@
         default:
             <MudPaper MaxHeight="22px" Class="mx-n7 pl-1 d-flex flex-grow-1 justify-space-between">
                 <MudText Class="d-inline-flex flex-grow-1 " Typo="Typo.body2" Style="height:18px">@TaskItem.Label </MudText>
-                <MudText Class="mr-1 d-inline-flex" Style="height:18px;" Typo="Typo.body2">@TaskItem.Date.ToShortDateString()</MudText>
+                <MudText Class="mr-1 d-inline-flex" Style="height:18px;" Typo="Typo.body2">@TaskItem.Date.Value.ToShortDateString()</MudText>
             </MudPaper>
             break;
         <!-- Data Entry Only: can change the value only -->

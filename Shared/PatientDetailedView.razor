@@ -22,11 +22,12 @@
                     @foreach (var task in group.Tasks) {
                         <!--<PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />-->
                         @switch(task.Type){
-                            <!-- CheckBox FIELD -->
+                    <!-- CheckBox FIELD -->
                             case TaskType.Checkbox:
+                                var check = task as PatientTaskBool;    
                                 <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
                                     <MudText Class="d-inline-flex align-self-center pl-2">@task.Label</MudText>
-                                    <MudCheckBox T="bool"/>
+                                    <MudCheckBox @bind-Checked="check.Checked" />
                                 </MudPaper>
                                 break;
                             <!-- TEXT FIELD -->
@@ -48,7 +49,7 @@
                                         <MudNumericField Class="d-inline-flex align-self-center px-2 text-align-right"
                                      Style="text-align:right;padding-bottom:16px;height:24px;"
                                      Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense" 
-                                     T="double" HideSpinButtons="true" Value="@number.Value" />
+                                     @bind-Value="number.Value" HideSpinButtons="true" />
                                 </MudPaper>
                                 break;
                             case TaskType.Formula:
@@ -67,9 +68,9 @@
                                 var date = task as PatientTaskDate;
                                 <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
                                         <MudText Class="d-inline-flex flex-grow-1 align-self-center px-2 ">@date.Label</MudText>
-                                        <MudDatePicker Class="d-inline-flex align-self-center px-2 text-align-right" Date="@date.Date" AutoClose="true"
+                                        <MudDatePicker Class="d-inline-flex align-self-center px-2 text-align-right" AutoClose="true"
                                             Style="padding-bottom:12px;height:36px;width:200px" Margin="Margin.Dense" Variant="Variant.Filled"
-                                            T="DateTime?"  />
+                                            @bind-Date="date.Date" />
                                 </MudPaper>
                                 break;
                             <!-- List FIELD -->
@@ -77,9 +78,9 @@
                                 var list = task as PatientTaskList;
                                 <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
                                     <MudText Class="d-inline-flex flex-grow-1 align-self-center px-2" T="string">@list.Label</MudText>
-                                    <MudSelect T="string" Class="d-inline-flex flex-grow-1 align-self-center px-2 ">
+                                    <MudSelect @bind-Value="list.SelectedOption" Class="d-inline-flex flex-grow-1 align-self-center px-2" TransformOrigin="Origin.CenterCenter">
                                         @foreach(var option in list.Options){
-                                            <MudSelectItem Value="@(option)">@option</MudSelectItem>
+                                            <MudSelectItem Value="@(list.Options.IndexOf(option))">@option</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </MudPaper>
