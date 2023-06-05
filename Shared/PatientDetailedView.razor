@@ -54,13 +54,26 @@
                                 break;
                             case TaskType.Formula:
                                 var formula = task as PatientTaskCalculation;
-                                <MudPaper Class="d-flex justify-content-between mt-1" Outlined="true">
-                                        <MudText Class="d-inline-flex align-self-center px-2">@formula.Label</MudText>
-                                        <MudTextField Class="d-inline-flex align-self-center px-2"
-                                            Style="text-align:right;padding-bottom:16px;height:24px;"
-                                            Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
-                                            T="string" @bind-Value="formula.Formula" />
-                                </MudPaper>
+                                    <MudExpansionPanel Class="mt-2" HideIcon="true" Dense="true" >
+                                    <TitleContent>
+                                            <MudPaper Class="d-flex justify-content-between ma-0" Outlined="true" >
+                                                <MudText Class="d-inline-flex align-self-center pl-2">@formula.Label</MudText>
+                                                <MudText Class="d-inline-flex align-self-center px-2 text-align-right"
+                                                    Style="margin-left:auto;padding-bottom:16px;height:24px;">@formula.Calculate()</MudText>
+                                            </MudPaper>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudPaper Class="d-flex justify-content-between mt-1" Elevation="0">
+                                            <MudText Class="d-inline-flex align-self-center px-2">Formula: </MudText>
+                                            <MudTextField Class="d-inline-flex align-self-center px-2 text-align-right"
+                                          Style="text-align:right;padding-bottom:16px;height:24px;"
+                                          Variant="Variant.Filled" DisableUnderLine="true" Margin="Margin.Dense"
+                                          T="string" @bind-Value="formula.Formula" />
+                                        </MudPaper>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+
+
                                 <!-- TODO: Add expansion panel to allow editing the values -->
                                 break;
                             <!-- DATE FIELD -->
