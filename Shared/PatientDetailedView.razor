@@ -1,9 +1,31 @@
-﻿
-<MudPaper Class="mud-theme-primary" MinHeight="180px">
-    <MudText Typo="Typo.h2">@(patient.LastName.ToUpper() + ", " + patient.FirstName.ToUpper())</MudText>
-    <MudText Typo="Typo.h3">DUE: @patient.StartDate.Value.ToLongDateString()</MudText>
-    <MudText Typo="Typo.h3">PHYSICIAN: N/A</MudText>
+﻿<MudPaper Class="mud-theme-primary pa-2 ml-2 mt-1 rounded-t-xl rounded-0" MinHeight="240px">
+    <MudItem Class="d-flex justify-content-between">
+        <MudItem>
+            <MudText Typo="Typo.h2">@(patient.LastName.ToUpper() + ", " + patient.FirstName.ToUpper())</MudText>
+            <MudText Typo="Typo.h3">DUE: @patient.StartDate.Value.ToLongDateString()</MudText>
+            <MudText Typo="Typo.h3">PHYSICIAN: N/A</MudText>
+        </MudItem>
+        <MudItem Style="transform:rotateZ(270deg);height:200px;" Class="d-flex flex-column justify-content-end mr-10">
+            <MudButton Variant="Variant.Outlined">History</MudButton>
+            <MudButton Variant="Variant.Outlined">Compare</MudButton>
+        </MudItem>
+    </MudItem>
+
 </MudPaper>
+
+<MudContainer Class="mt-n12 ml-6 d-flex flex-row" > 
+    @foreach (var group in patient.TaskGroups) {
+        <MudPaper Class="d-flex ma-2 pa-2 flex-column" Elevation="2" >
+            <MudText class="d-flex" Typo="Typo.h6">@group.Label</MudText>
+            @foreach (var task in group.Tasks) {
+                <PatientTask TaskItem="@task" Edit="EditMode.DataEntry" />
+            }
+        </MudPaper>
+    }
+
+</MudContainer>
+
+
 
 @code {
     [Inject] private IDialogService dialogService { get; set; }
@@ -43,4 +65,5 @@
     private async Task EditPatient(){
         navigationManager.NavigateTo($"/editpatient/{PatientId}");
     }
+    
 }
