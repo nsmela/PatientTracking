@@ -135,4 +135,5 @@ The UI is going to place a spreadhseet, so scrolling downwards is the best direc
 - **Sidebars**: https://getbootstrap.com/docs/5.0/examples/sidebars/
 - **Dashboard**: https://getbootstrap.com/docs/5.0/examples/dashboard/
 - **Sign in**: https://getbootstrap.com/docs/5.0/examples/sign-in/
+- **Color Picker**: https://mdbootstrap.com/docs/b4/jquery/plugins/color-picker/
 - 
