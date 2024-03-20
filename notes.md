@@ -105,6 +105,8 @@ The UI is going to place a spreadhseet, so scrolling downwards is the best direc
 ## Views
 ### Dashboard
 ### PatientsList
+- horizontal scroll
+- compare like vehicles (checkbox compare, select which to compare)
 ### PatientDetails
 - view, update, archive, remove **Patient**
 - view, add, update, reorganize, hide, delete **CheckGroup** 
@@ -119,3 +121,16 @@ The UI is going to place a spreadhseet, so scrolling downwards is the best direc
 ### UserProfile
 ### Login/Register/Logout
 
+## Ideas
+- **To-Do List**: https://bootdey.com/snippets/view/To-do-tasks#preview
+- **ToDo with Pages**: https://bootdey.com/snippets/view/To-Do-List
+- **Timeline**: https://bootdey.com/snippets/view/Timeline-with-small-images
+- **Timeline**: https://www.bootdey.com/snippets/view/bs4-event-timeline
+- **Compare**: https://bootsnipp.com/snippets/z8aM9
+- **Admin Template**: https://www.bootstrapdash.com/blog/flat-minimalist-admin-templates
+- **First Page**: https://getbootstrap.com/docs/5.0/examples/heroes/
+- **Headers**: https://getbootstrap.com/docs/5.0/examples/headers/
+- **Sidebars**: https://getbootstrap.com/docs/5.0/examples/sidebars/
+- **Dashboard**: https://getbootstrap.com/docs/5.0/examples/dashboard/
+- **Sign in**: https://getbootstrap.com/docs/5.0/examples/sign-in/
+- 
