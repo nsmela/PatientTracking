@@ -16,7 +16,7 @@
     - Date
   - Reference (a value this chekc is compared to: another task,a  set value, etc)
   - Tolerance (determines if a check passed based on what the Reference is)
-  - Notes
+  - Note (small text under the label/name)
 ### Component Design
 - Display Mode:
   - Reorganize (up/down)
@@ -89,3 +89,8 @@ Lists the CheckGroups
 - BODY Check (+FOV Artifact): (checkbox) -> []
 - Prothesis or artifact?: (checkbox) -> yes[], no[x]
 - Pacemaker?: (checkbox) -> yes[], no[x]
+## Beam Configuration 
+- User Origin: (checkbox) -> []
+- Beam Geometry: (checkbox) -> []
+- RO Placed Fields: (checkbox) -> [] N/A[]
+- Isocentre Reasonable? (checkbox) -> []
