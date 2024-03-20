@@ -1,5 +1,8 @@
 # Chat with Nick
 
+# Philosphy
+Checks are ad-hoc, meaning they can be added and removed at will. Templates are merely pre-designed Checks that could be rebuilt one-by-one if wanted.
+
 ## Tasks/Tests/Checks
 - rename a Test to **Check** because they're checking off things as they progress
 ### Attributes
@@ -36,6 +39,7 @@
 - Default Background Color
 - list of **Checks** 
 - isHidden by default
+- Private (template can only be added by the owner)
 ### Component Design
 - Display Mode
   - Each CheckComponent listed
@@ -94,3 +98,24 @@ Lists the CheckGroups
 - Beam Geometry: (checkbox) -> []
 - RO Placed Fields: (checkbox) -> [] N/A[]
 - Isocentre Reasonable? (checkbox) -> []
+
+# UI Design
+The UI is going to place a spreadhseet, so scrolling downwards is the best direction. Try to minimize space.
+
+## Views
+### Dashboard
+### PatientsList
+### PatientDetails
+- view, update, archive, remove **Patient**
+- view, add, update, reorganize, hide, delete **CheckGroup** 
+- view, add, update, reorganize, delete **Check**
+- scroll downwards
+- history (changes, notes, etc)
+- compare to other patients (similar Checks)
+- toolbar (add checkgroup or check by dragging)
+### AddPatient
+### CheckGroupTemplates
+### PatientTemplates
+### UserProfile
+### Login/Register/Logout
+
