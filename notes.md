@@ -40,6 +40,7 @@ Checks are ad-hoc, meaning they can be added and removed at will. Templates are 
 - list of **Checks** 
 - isHidden by default
 - Private (template can only be added by the owner)
+- subheadings (name and position)
 ### Component Design
 - Display Mode
   - Each CheckComponent listed
@@ -50,6 +51,7 @@ Checks are ad-hoc, meaning they can be added and removed at will. Templates are 
   - reorganize Checks
   - Duplicate (copy and paste)
   - Add new Check
+  - Subheadings (name and position)
 ## Patient Templates
 A patient template can be selected and applied when a patient is first added
 ### Attributes
